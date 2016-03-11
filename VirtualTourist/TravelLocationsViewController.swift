@@ -7,17 +7,26 @@
 //
 
 import UIKit
+import MapKit
 
-class ViewController: UIViewController {
+class TravelLocationsViewController: UIViewController {
 
+	@IBOutlet weak var mapView: MKMapView!
+	@IBOutlet weak var tapPinsToDeleteNavBar: UINavigationBar!
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		// Do any additional setup after loading the view, typically from a nib.
+		
 	}
 
 	override func didReceiveMemoryWarning() {
 		super.didReceiveMemoryWarning()
 		// Dispose of any resources that can be recreated.
+	}
+	
+	override func viewWillAppear(animated: Bool) {
+		super.viewWillAppear(animated)
+		tapPinsToDeleteNavBar.alpha = 0.0
 	}
 
 

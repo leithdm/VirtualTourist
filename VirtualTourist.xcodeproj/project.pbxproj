@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		01BB40AA1C92D2AF0074F29C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01BB40A91C92D2AF0074F29C /* AppDelegate.swift */; };
-		01BB40AC1C92D2AF0074F29C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01BB40AB1C92D2AF0074F29C /* ViewController.swift */; };
+		01BB40AC1C92D2AF0074F29C /* TravelLocationsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01BB40AB1C92D2AF0074F29C /* TravelLocationsViewController.swift */; };
 		01BB40AF1C92D2AF0074F29C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 01BB40AD1C92D2AF0074F29C /* Main.storyboard */; };
 		01BB40B11C92D2AF0074F29C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 01BB40B01C92D2AF0074F29C /* Assets.xcassets */; };
 		01BB40B41C92D2AF0074F29C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 01BB40B21C92D2AF0074F29C /* LaunchScreen.storyboard */; };
@@ -36,7 +36,7 @@
 /* Begin PBXFileReference section */
 		01BB40A61C92D2AF0074F29C /* VirtualTourist.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VirtualTourist.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		01BB40A91C92D2AF0074F29C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		01BB40AB1C92D2AF0074F29C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		01BB40AB1C92D2AF0074F29C /* TravelLocationsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TravelLocationsViewController.swift; sourceTree = "<group>"; };
 		01BB40AE1C92D2AF0074F29C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		01BB40B01C92D2AF0074F29C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		01BB40B31C92D2AF0074F29C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -97,12 +97,11 @@
 		01BB40A81C92D2AF0074F29C /* VirtualTourist */ = {
 			isa = PBXGroup;
 			children = (
+				01BB40D81C92D72A0074F29C /* Model */,
+				01BB40D91C92D7360074F29C /* View */,
+				01BB40D71C92D7210074F29C /* Controller */,
 				01BB40A91C92D2AF0074F29C /* AppDelegate.swift */,
-				01BB40AB1C92D2AF0074F29C /* ViewController.swift */,
-				01BB40AD1C92D2AF0074F29C /* Main.storyboard */,
-				01BB40B01C92D2AF0074F29C /* Assets.xcassets */,
-				01BB40B21C92D2AF0074F29C /* LaunchScreen.storyboard */,
-				01BB40B51C92D2AF0074F29C /* Info.plist */,
+				01BB40DA1C92D7750074F29C /* Resources */,
 			);
 			path = VirtualTourist;
 			sourceTree = "<group>";
@@ -123,6 +122,39 @@
 				01BB40CB1C92D2B00074F29C /* Info.plist */,
 			);
 			path = VirtualTouristUITests;
+			sourceTree = "<group>";
+		};
+		01BB40D71C92D7210074F29C /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+				01BB40AB1C92D2AF0074F29C /* TravelLocationsViewController.swift */,
+			);
+			name = Controller;
+			sourceTree = "<group>";
+		};
+		01BB40D81C92D72A0074F29C /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		01BB40D91C92D7360074F29C /* View */ = {
+			isa = PBXGroup;
+			children = (
+				01BB40AD1C92D2AF0074F29C /* Main.storyboard */,
+			);
+			name = View;
+			sourceTree = "<group>";
+		};
+		01BB40DA1C92D7750074F29C /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				01BB40B01C92D2AF0074F29C /* Assets.xcassets */,
+				01BB40B21C92D2AF0074F29C /* LaunchScreen.storyboard */,
+				01BB40B51C92D2AF0074F29C /* Info.plist */,
+			);
+			name = Resources;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -256,7 +288,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				01BB40AC1C92D2AF0074F29C /* ViewController.swift in Sources */,
+				01BB40AC1C92D2AF0074F29C /* TravelLocationsViewController.swift in Sources */,
 				01BB40AA1C92D2AF0074F29C /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

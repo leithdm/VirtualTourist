@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6211" systemVersion="14A298i" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="5Yk-dT-VkT">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6204"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Virtual Tourist-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="TravelLocationsViewController" customModule="VirtualTourist" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="y3c-jy-aDJ"/>
                         <viewControllerLayoutGuide type="bottom" id="wfy-db-euE"/>
@@ -15,11 +16,98 @@
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="u6w-zY-kfn">
+                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                            </mapView>
+                            <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EcS-xH-tbB">
+                                <rect key="frame" x="0.0" y="556" width="600" height="44"/>
+                                <color key="barTintColor" red="1" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <textAttributes key="titleTextAttributes">
+                                    <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                </textAttributes>
+                                <items>
+                                    <navigationItem title="Tap Pins To Delete" id="Tzd-bX-Sr8"/>
+                                </items>
+                            </navigationBar>
+                        </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="EcS-xH-tbB" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="7RE-wu-F5Q"/>
+                            <constraint firstItem="u6w-zY-kfn" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" id="GSk-fo-gaD"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="u6w-zY-kfn" secondAttribute="bottom" id="HBm-e7-OwW"/>
+                            <constraint firstAttribute="trailing" secondItem="u6w-zY-kfn" secondAttribute="trailing" id="Hpl-Fe-mHp"/>
+                            <constraint firstItem="u6w-zY-kfn" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="UYY-CC-5I6"/>
+                            <constraint firstAttribute="trailing" secondItem="EcS-xH-tbB" secondAttribute="trailing" id="jj1-es-pAi"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="EcS-xH-tbB" secondAttribute="bottom" id="zNH-7n-sBi"/>
+                        </constraints>
                     </view>
+                    <navigationItem key="navigationItem" title="Virtual Tourist" id="Se3-Ih-lFy">
+                        <barButtonItem key="rightBarButtonItem" title="Edit" id="bGt-FX-4pe"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="mapView" destination="u6w-zY-kfn" id="725-Qp-hVf"/>
+                        <outlet property="tapPinsToDeleteNavBar" destination="EcS-xH-tbB" id="ptx-HQ-Vjm"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="1164" y="633"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="sCT-gR-YYy">
+            <objects>
+                <viewController id="MFO-QI-yed" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="WEQ-cD-p65"/>
+                        <viewControllerLayoutGuide type="bottom" id="V7g-G9-b7W"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="ioV-lx-bB3">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="SZX-hX-cJG"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="C9l-uc-hUU" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="2608" y="633"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="sK5-m5-UEH">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="5Yk-dT-VkT" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="kgc-o7-kXo">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="BYZ-38-t0r" kind="relationship" relationship="rootViewController" id="LGh-ra-C9q"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="hOb-DI-oTW" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="482" y="633"/>
+        </scene>
+        <!--Navigation Controller-->
+        <scene sceneID="XWZ-Nf-ynB">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="heo-lA-EA2" sceneMemberID="viewController">
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="g27-1R-oqe">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="MFO-QI-yed" kind="relationship" relationship="rootViewController" id="NlO-LX-K69"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="LlN-zm-gfW" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1923" y="633"/>
         </scene>
     </scenes>
 </document>
