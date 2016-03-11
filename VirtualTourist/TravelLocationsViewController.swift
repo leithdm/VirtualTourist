@@ -16,7 +16,7 @@ class TravelLocationsViewController: UIViewController {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		
+		addLongPressPinDropRecognizer()
 	}
 
 	override func didReceiveMemoryWarning() {
@@ -29,6 +29,47 @@ class TravelLocationsViewController: UIViewController {
 		tapPinsToDeleteNavBar.alpha = 0.0
 	}
 
+	
+	//MARK: - gesture recognizer
+	func addLongPressPinDropRecognizer() {
+		let longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: "dropAPin:")
+		view.addGestureRecognizer(longPressGestureRecognizer)
+	}
+	
+	//MARK: - drop a pin
+	
+	func dropAPin(pinDropRecognizer: UIGestureRecognizer) {
+		
+		if pinDropRecognizer.state == .Began {
+		
+		let locationInView = pinDropRecognizer.locationInView(mapView)
+		let pinCoordinates = mapView.convertPoint(locationInView, toCoordinateFromView: mapView)
+		print(pinCoordinates.latitude, pinCoordinates.longitude)
+			
+			
+		let pin = Pin(latitude: pinCoordinates.latitude, longitude: pinCoordinates.longitude)
+		mapView.addAnnotation(pin)
+		}
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 }
 

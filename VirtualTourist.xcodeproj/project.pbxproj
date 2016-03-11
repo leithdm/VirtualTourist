@@ -14,6 +14,7 @@
 		01BB40B41C92D2AF0074F29C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 01BB40B21C92D2AF0074F29C /* LaunchScreen.storyboard */; };
 		01BB40BF1C92D2B00074F29C /* VirtualTouristTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01BB40BE1C92D2B00074F29C /* VirtualTouristTests.swift */; };
 		01BB40CA1C92D2B00074F29C /* VirtualTouristUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01BB40C91C92D2B00074F29C /* VirtualTouristUITests.swift */; };
+		01BB40DC1C92FD910074F29C /* Pin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01BB40DB1C92FD910074F29C /* Pin.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,7 @@
 		01BB40C51C92D2B00074F29C /* VirtualTouristUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = VirtualTouristUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		01BB40C91C92D2B00074F29C /* VirtualTouristUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VirtualTouristUITests.swift; sourceTree = "<group>"; };
 		01BB40CB1C92D2B00074F29C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		01BB40DB1C92FD910074F29C /* Pin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pin.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -135,6 +137,7 @@
 		01BB40D81C92D72A0074F29C /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				01BB40DB1C92FD910074F29C /* Pin.swift */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -288,6 +291,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				01BB40DC1C92FD910074F29C /* Pin.swift in Sources */,
 				01BB40AC1C92D2AF0074F29C /* TravelLocationsViewController.swift in Sources */,
 				01BB40AA1C92D2AF0074F29C /* AppDelegate.swift in Sources */,
 			);
@@ -516,6 +520,7 @@
 				01BB40D01C92D2B00074F29C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		01BB40D11C92D2B00074F29C /* Build configuration list for PBXNativeTarget "VirtualTouristTests" */ = {
 			isa = XCConfigurationList;
@@ -524,6 +529,7 @@
 				01BB40D31C92D2B00074F29C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		01BB40D41C92D2B00074F29C /* Build configuration list for PBXNativeTarget "VirtualTouristUITests" */ = {
 			isa = XCConfigurationList;
@@ -532,6 +538,7 @@
 				01BB40D61C92D2B00074F29C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
