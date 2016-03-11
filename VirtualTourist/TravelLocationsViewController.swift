@@ -14,7 +14,9 @@ class TravelLocationsViewController: UIViewController {
 	//MARK: - constants
 	struct Constants {
 		static let pinReuseId = "pin"
-		
+		static let editButtonDone = "Done"
+		static let editButtonEdit = "Edit"
+		static let backButtonOK = "OK"
 	}
 
 	//MARK: - outlets
@@ -24,12 +26,14 @@ class TravelLocationsViewController: UIViewController {
 	
 	
 	//MARK: - properties
-	var inEditMode = false 
+	var inEditMode = false
+	var pinSelection: Pin?
 	
 	//MARK: - lifecycle methods
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		mapView.delegate = self
+		navigationItem.backBarButtonItem = UIBarButtonItem(title: Constants.backButtonOK, style: .Plain, target: nil, action: nil)
 		addLongPressPinDropRecognizer()
 	}
 	
@@ -63,9 +67,9 @@ class TravelLocationsViewController: UIViewController {
 		editing = editing == true ? false: true
 		
 		if editing {
-			editButton.title = "Done"
+			editButton.title = Constants.editButtonDone
 		} else {
-			editButton.title = "Edit"
+			editButton.title = Constants.editButtonEdit
 		}
 		
 		statusTapPinDeleteNavBar()
@@ -82,12 +86,23 @@ class TravelLocationsViewController: UIViewController {
 	}
 	
 	func statusEditButtonEnabled() {
-		//TODO: - 
+		//TODO: -
 	}
 	
+	//MARK: - prepare for segue
+	
+	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+		if segue.identifier == "PhotoAlbumViewController" {
+		let pavc = segue.destinationViewController as! PhotoAlbumViewController
+		pavc.pinSelection = pinSelection
+		}
+	}
 }
 
+//MARK: - MKMapView delegate methods
+
 extension TravelLocationsViewController: MKMapViewDelegate {
+	
 	func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
 		var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(Constants.pinReuseId) as? MKPinAnnotationView
 		if pinView == nil {
@@ -100,6 +115,12 @@ extension TravelLocationsViewController: MKMapViewDelegate {
 			pinView!.annotation = annotation
 		}
 		return pinView
+	}
+	
+	func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+		let pin = view.annotation as! Pin
+		pinSelection = pin
+		performSegueWithIdentifier("PhotoAlbumViewController", sender: self)
 	}
 }
 

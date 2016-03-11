@@ -16,6 +16,7 @@
 		01BB40CA1C92D2B00074F29C /* VirtualTouristUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01BB40C91C92D2B00074F29C /* VirtualTouristUITests.swift */; };
 		01BB40DC1C92FD910074F29C /* Pin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01BB40DB1C92FD910074F29C /* Pin.swift */; };
 		01BB40DE1C9301440074F29C /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 01BB40DD1C9301440074F29C /* MapKit.framework */; };
+		01BB40E01C9310580074F29C /* PhotoAlbumViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01BB40DF1C9310580074F29C /* PhotoAlbumViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -51,6 +52,7 @@
 		01BB40CB1C92D2B00074F29C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		01BB40DB1C92FD910074F29C /* Pin.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Pin.swift; sourceTree = "<group>"; };
 		01BB40DD1C9301440074F29C /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		01BB40DF1C9310580074F29C /* PhotoAlbumViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoAlbumViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,6 +136,7 @@
 			isa = PBXGroup;
 			children = (
 				01BB40AB1C92D2AF0074F29C /* TravelLocationsViewController.swift */,
+				01BB40DF1C9310580074F29C /* PhotoAlbumViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -303,6 +306,7 @@
 				01BB40DC1C92FD910074F29C /* Pin.swift in Sources */,
 				01BB40AC1C92D2AF0074F29C /* TravelLocationsViewController.swift in Sources */,
 				01BB40AA1C92D2AF0074F29C /* AppDelegate.swift in Sources */,
+				01BB40E01C9310580074F29C /* PhotoAlbumViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
