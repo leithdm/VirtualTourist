@@ -43,9 +43,14 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Virtual Tourist" id="Se3-Ih-lFy">
-                        <barButtonItem key="rightBarButtonItem" title="Edit" id="bGt-FX-4pe"/>
+                        <barButtonItem key="rightBarButtonItem" title="Edit" id="bGt-FX-4pe">
+                            <connections>
+                                <action selector="didSelectEditMode:" destination="BYZ-38-t0r" id="wGo-pW-ZeV"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="editButton" destination="bGt-FX-4pe" id="FR3-oD-Yrj"/>
                         <outlet property="mapView" destination="u6w-zY-kfn" id="725-Qp-hVf"/>
                         <outlet property="tapPinsToDeleteNavBar" destination="EcS-xH-tbB" id="ptx-HQ-Vjm"/>
                     </connections>

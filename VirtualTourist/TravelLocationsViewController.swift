@@ -10,27 +10,37 @@ import UIKit
 import MapKit
 
 class TravelLocationsViewController: UIViewController {
-
-	@IBOutlet weak var mapView: MKMapView!
-	@IBOutlet weak var tapPinsToDeleteNavBar: UINavigationBar!
 	
-	override func viewDidLoad() {
-		super.viewDidLoad()
-		addLongPressPinDropRecognizer()
+	//MARK: - constants
+	struct Constants {
+		static let pinReuseId = "pin"
+		
 	}
 
-	override func didReceiveMemoryWarning() {
-		super.didReceiveMemoryWarning()
-		// Dispose of any resources that can be recreated.
+	//MARK: - outlets
+	@IBOutlet weak var mapView: MKMapView!
+	@IBOutlet weak var tapPinsToDeleteNavBar: UINavigationBar!
+	@IBOutlet weak var editButton: UIBarButtonItem!
+	
+	
+	//MARK: - properties
+	var inEditMode = false 
+	
+	//MARK: - lifecycle methods
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		mapView.delegate = self
+		addLongPressPinDropRecognizer()
 	}
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
-		tapPinsToDeleteNavBar.alpha = 0.0
+		tapPinsToDeleteNavBar.hidden = true
 	}
 
 	
 	//MARK: - gesture recognizer
+	
 	func addLongPressPinDropRecognizer() {
 		let longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: "dropAPin:")
 		view.addGestureRecognizer(longPressGestureRecognizer)
@@ -39,37 +49,57 @@ class TravelLocationsViewController: UIViewController {
 	//MARK: - drop a pin
 	
 	func dropAPin(pinDropRecognizer: UIGestureRecognizer) {
-		
 		if pinDropRecognizer.state == .Began {
-		
 		let locationInView = pinDropRecognizer.locationInView(mapView)
 		let pinCoordinates = mapView.convertPoint(locationInView, toCoordinateFromView: mapView)
-		print(pinCoordinates.latitude, pinCoordinates.longitude)
-			
-			
 		let pin = Pin(latitude: pinCoordinates.latitude, longitude: pinCoordinates.longitude)
 		mapView.addAnnotation(pin)
 		}
 	}
 	
+	//MARK: - in edit mode
 	
+	@IBAction func didSelectEditMode(sender: UIBarButtonItem) {
+		editing = editing == true ? false: true
+		
+		if editing {
+			editButton.title = "Done"
+		} else {
+			editButton.title = "Edit"
+		}
+		
+		statusTapPinDeleteNavBar()
+		statusEditButtonEnabled()
+	}
 	
+	//helper functions
+	func statusTapPinDeleteNavBar() {
+		if editing {
+			tapPinsToDeleteNavBar.hidden = false
+		} else {
+			tapPinsToDeleteNavBar.hidden = true
+		}
+	}
 	
+	func statusEditButtonEnabled() {
+		//TODO: - 
+	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+}
 
+extension TravelLocationsViewController: MKMapViewDelegate {
+	func mapView(mapView: MKMapView, viewForAnnotation annotation: MKAnnotation) -> MKAnnotationView? {
+		var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(Constants.pinReuseId) as? MKPinAnnotationView
+		if pinView == nil {
+			pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: Constants.pinReuseId)
+			pinView!.animatesDrop = true
+			pinView!.draggable = true
+			pinView!.pinTintColor = UIColor.purpleColor()
+		}
+		else {
+			pinView!.annotation = annotation
+		}
+		return pinView
+	}
 }
 
