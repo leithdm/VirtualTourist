@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <scenes>
@@ -88,7 +89,7 @@
                                     <navigationItem title="New Collection" id="k2L-Z8-DiU"/>
                                 </items>
                             </navigationBar>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="qpj-9B-Gao">
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" indicatorStyle="white" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="qpj-9B-Gao">
                                 <rect key="frame" x="0.0" y="226" width="600" height="329.5"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="600" id="al2-dH-Q8S"/>
@@ -100,14 +101,29 @@
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="0ga-Tn-Djt">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PhotoAlbumCollectionViewCell" id="0ga-Tn-Djt" customClass="PhotoAlbumCollectionViewCell" customModule="VirtualTourist" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="136" height="136"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                             <rect key="frame" x="0.0" y="0.0" width="136" height="136"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="UVM-Sw-cPK">
+                                                    <rect key="frame" x="8" y="8" width="120" height="120"/>
+                                                </imageView>
+                                            </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
+                                        <constraints>
+                                            <constraint firstItem="UVM-Sw-cPK" firstAttribute="top" secondItem="0ga-Tn-Djt" secondAttribute="topMargin" id="FUZ-Zl-UCg"/>
+                                            <constraint firstItem="UVM-Sw-cPK" firstAttribute="bottom" secondItem="0ga-Tn-Djt" secondAttribute="bottomMargin" id="GtV-38-lrH"/>
+                                            <constraint firstItem="UVM-Sw-cPK" firstAttribute="trailing" secondItem="0ga-Tn-Djt" secondAttribute="trailingMargin" id="JLY-GQ-hBR"/>
+                                            <constraint firstItem="UVM-Sw-cPK" firstAttribute="leading" secondItem="0ga-Tn-Djt" secondAttribute="leadingMargin" id="jWL-Uy-apX"/>
+                                        </constraints>
+                                        <connections>
+                                            <outlet property="flickrImage" destination="UVM-Sw-cPK" id="ZYX-Jp-2mg"/>
+                                            <outlet property="photoImage" destination="UVM-Sw-cPK" id="1Pl-6f-uLi"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                             </collectionView>
