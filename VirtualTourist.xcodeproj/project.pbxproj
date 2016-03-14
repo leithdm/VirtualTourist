@@ -21,6 +21,7 @@
 		01BB40EB1C9580510074F29C /* FlickrClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01BB40EA1C9580510074F29C /* FlickrClient.swift */; };
 		01E212A11C96C8F30063AD95 /* icon.gif in Resources */ = {isa = PBXBuildFile; fileRef = 01E212A01C96C8F30063AD95 /* icon.gif */; };
 		01E212A31C96CAF40063AD95 /* UICustomCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E212A21C96CAF40063AD95 /* UICustomCollectionViewCell.swift */; };
+		01E212A51C971A3C0063AD95 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01E212A41C971A3C0063AD95 /* ImageCache.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -61,6 +62,7 @@
 		01BB40EA1C9580510074F29C /* FlickrClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlickrClient.swift; sourceTree = "<group>"; };
 		01E212A01C96C8F30063AD95 /* icon.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; name = icon.gif; path = ../icon.gif; sourceTree = "<group>"; };
 		01E212A21C96CAF40063AD95 /* UICustomCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UICustomCollectionViewCell.swift; sourceTree = "<group>"; };
+		01E212A41C971A3C0063AD95 /* ImageCache.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,6 +156,7 @@
 			children = (
 				01BB40DB1C92FD910074F29C /* Pin.swift */,
 				01BB40E81C932A9D0074F29C /* Photo.swift */,
+				01E212A41C971A3C0063AD95 /* ImageCache.swift */,
 				01BB40E31C9322E60074F29C /* API */,
 			);
 			name = Model;
@@ -326,6 +329,7 @@
 			files = (
 				01BB40E91C932A9D0074F29C /* Photo.swift in Sources */,
 				01E212A31C96CAF40063AD95 /* UICustomCollectionViewCell.swift in Sources */,
+				01E212A51C971A3C0063AD95 /* ImageCache.swift in Sources */,
 				01BB40DC1C92FD910074F29C /* Pin.swift in Sources */,
 				01BB40AC1C92D2AF0074F29C /* TravelLocationsViewController.swift in Sources */,
 				01BB40AA1C92D2AF0074F29C /* AppDelegate.swift in Sources */,

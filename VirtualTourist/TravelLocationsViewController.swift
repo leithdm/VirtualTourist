@@ -116,16 +116,12 @@ class TravelLocationsViewController: UIViewController {
 			"latitudeDelta" : mapView.region.span.latitudeDelta,
 			"longitudeDelta" : mapView.region.span.longitudeDelta
 		]
-		
-		// Archive the dictionary into the filePath
 		NSKeyedArchiver.archiveRootObject(dictionary, toFile: filePath)
 	}
 	
 	func restoreMapRegion(animated: Bool) {
-
 		// if we can unarchive a dictionary, we will use it to set the map back to its previous center and span
 		if let regionDictionary = NSKeyedUnarchiver.unarchiveObjectWithFile(filePath) as? [String : AnyObject] {
-			
 			let longitude = regionDictionary["longitude"] as! CLLocationDegrees
 			let latitude = regionDictionary["latitude"] as! CLLocationDegrees
 			let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -138,7 +134,6 @@ class TravelLocationsViewController: UIViewController {
 			mapView.setRegion(savedRegion, animated: animated)
 		}
 	}
-
 }
 
 //MARK: - MKMapView delegate methods

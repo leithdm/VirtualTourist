@@ -66,6 +66,9 @@ class FlickrClient {
 		static let OKStatus = "ok"
 	}
 	
+	struct Caches {
+		static let imageCache = ImageCache()
+	}
 	
 	//MARK: - URL from Parameters
 	
