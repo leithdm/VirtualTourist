@@ -3,8 +3,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
-        <capability name="Constraints with non-1.0 multipliers" minToolsVersion="5.1"/>
     </dependencies>
     <scenes>
         <!--Virtual Tourist-->
@@ -75,9 +73,9 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="5Ml-s5-4vm">
-                                <rect key="frame" x="0.0" y="64" width="600" height="164.5"/>
+                                <rect key="frame" x="0.0" y="64" width="600" height="165"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="600" id="DjR-1S-1kY"/>
+                                    <constraint firstAttribute="height" constant="165" id="2mV-nm-U0Z"/>
                                 </constraints>
                             </mapView>
                             <navigationBar contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="xvv-zI-khu">
@@ -89,62 +87,62 @@
                                     <navigationItem title="New Collection" id="k2L-Z8-DiU"/>
                                 </items>
                             </navigationBar>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" indicatorStyle="white" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="qpj-9B-Gao">
-                                <rect key="frame" x="0.0" y="226" width="600" height="329.5"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="600" id="al2-dH-Q8S"/>
-                                </constraints>
-                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="10" minimumInteritemSpacing="10" id="oeW-UV-0ey">
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="qpj-9B-Gao">
+                                <rect key="frame" x="0.0" y="226" width="600" height="330"/>
+                                <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="oeW-UV-0ey">
                                     <size key="itemSize" width="136" height="136"/>
                                     <size key="headerReferenceSize" width="0.0" height="0.0"/>
                                     <size key="footerReferenceSize" width="0.0" height="0.0"/>
                                     <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
                                 </collectionViewFlowLayout>
                                 <cells>
-                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="PhotoAlbumCollectionViewCell" id="0ga-Tn-Djt" customClass="PhotoAlbumCollectionViewCell" customModule="VirtualTourist" customModuleProvider="target">
+                                    <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="UICustomCollectionViewCell" id="0ga-Tn-Djt" customClass="UICustomCollectionViewCell" customModule="VirtualTourist" customModuleProvider="target">
                                         <rect key="frame" x="0.0" y="0.0" width="136" height="136"/>
                                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                         <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                                             <rect key="frame" x="0.0" y="0.0" width="136" height="136"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="UVM-Sw-cPK">
-                                                    <rect key="frame" x="8" y="8" width="120" height="120"/>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="1zd-M5-Sov">
+                                                    <rect key="frame" x="0.0" y="0.0" width="136" height="136"/>
                                                 </imageView>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
                                         <constraints>
-                                            <constraint firstItem="UVM-Sw-cPK" firstAttribute="top" secondItem="0ga-Tn-Djt" secondAttribute="topMargin" id="FUZ-Zl-UCg"/>
-                                            <constraint firstItem="UVM-Sw-cPK" firstAttribute="bottom" secondItem="0ga-Tn-Djt" secondAttribute="bottomMargin" id="GtV-38-lrH"/>
-                                            <constraint firstItem="UVM-Sw-cPK" firstAttribute="trailing" secondItem="0ga-Tn-Djt" secondAttribute="trailingMargin" id="JLY-GQ-hBR"/>
-                                            <constraint firstItem="UVM-Sw-cPK" firstAttribute="leading" secondItem="0ga-Tn-Djt" secondAttribute="leadingMargin" id="jWL-Uy-apX"/>
+                                            <constraint firstAttribute="trailing" secondItem="1zd-M5-Sov" secondAttribute="trailing" id="J5Q-Rq-0oW"/>
+                                            <constraint firstItem="1zd-M5-Sov" firstAttribute="leading" secondItem="0ga-Tn-Djt" secondAttribute="leading" id="WMo-Ss-3yE"/>
+                                            <constraint firstItem="1zd-M5-Sov" firstAttribute="top" secondItem="0ga-Tn-Djt" secondAttribute="top" id="kmk-cP-H8U"/>
+                                            <constraint firstAttribute="bottom" secondItem="1zd-M5-Sov" secondAttribute="bottom" id="mku-H2-8Gt"/>
                                         </constraints>
                                         <connections>
-                                            <outlet property="flickrImage" destination="UVM-Sw-cPK" id="ZYX-Jp-2mg"/>
-                                            <outlet property="photoImage" destination="UVM-Sw-cPK" id="1Pl-6f-uLi"/>
+                                            <outlet property="flickrImage" destination="1zd-M5-Sov" id="qiO-hR-gw1"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
+                                <connections>
+                                    <outlet property="dataSource" destination="MFO-QI-yed" id="yO5-m0-ZsF"/>
+                                </connections>
                             </collectionView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="5Ml-s5-4vm" firstAttribute="top" secondItem="WEQ-cD-p65" secondAttribute="bottom" id="3Tw-8E-ygW"/>
-                            <constraint firstItem="qpj-9B-Gao" firstAttribute="top" secondItem="5Ml-s5-4vm" secondAttribute="bottom" constant="-2" id="BaO-si-Zd8"/>
-                            <constraint firstItem="qpj-9B-Gao" firstAttribute="leading" secondItem="ioV-lx-bB3" secondAttribute="leading" id="HXO-Kh-L9Y"/>
-                            <constraint firstItem="5Ml-s5-4vm" firstAttribute="height" secondItem="qpj-9B-Gao" secondAttribute="height" multiplier="0.5" id="ISF-qO-Jqu"/>
-                            <constraint firstItem="V7g-G9-b7W" firstAttribute="top" secondItem="xvv-zI-khu" secondAttribute="bottom" id="IWZ-c6-E2X"/>
-                            <constraint firstAttribute="trailing" secondItem="qpj-9B-Gao" secondAttribute="trailing" id="MvG-zr-sU4"/>
-                            <constraint firstItem="5Ml-s5-4vm" firstAttribute="leading" secondItem="ioV-lx-bB3" secondAttribute="leading" id="PMt-MU-Ay5"/>
-                            <constraint firstAttribute="trailing" secondItem="xvv-zI-khu" secondAttribute="trailing" id="QzQ-IJ-Vsm"/>
-                            <constraint firstItem="xvv-zI-khu" firstAttribute="top" secondItem="qpj-9B-Gao" secondAttribute="bottom" id="lQt-DV-5aM"/>
-                            <constraint firstItem="xvv-zI-khu" firstAttribute="leading" secondItem="ioV-lx-bB3" secondAttribute="leading" id="wId-Nc-MUd"/>
-                            <constraint firstAttribute="trailing" secondItem="5Ml-s5-4vm" secondAttribute="trailing" id="yde-XU-Ki1"/>
+                            <constraint firstItem="qpj-9B-Gao" firstAttribute="leading" secondItem="xvv-zI-khu" secondAttribute="leading" id="1RK-Rc-JdG"/>
+                            <constraint firstItem="xvv-zI-khu" firstAttribute="bottom" secondItem="V7g-G9-b7W" secondAttribute="top" id="3vl-CE-HS7"/>
+                            <constraint firstAttribute="trailing" secondItem="5Ml-s5-4vm" secondAttribute="trailing" id="4o6-pb-crI"/>
+                            <constraint firstItem="qpj-9B-Gao" firstAttribute="top" secondItem="WEQ-cD-p65" secondAttribute="bottom" constant="162" id="5MQ-HM-zxj"/>
+                            <constraint firstItem="xvv-zI-khu" firstAttribute="top" secondItem="qpj-9B-Gao" secondAttribute="bottom" id="CkG-6w-ked"/>
+                            <constraint firstItem="xvv-zI-khu" firstAttribute="trailing" secondItem="qpj-9B-Gao" secondAttribute="trailing" id="XuD-0P-0bw"/>
+                            <constraint firstItem="xvv-zI-khu" firstAttribute="leading" secondItem="ioV-lx-bB3" secondAttribute="leading" id="ZY2-Rs-JcV"/>
+                            <constraint firstItem="qpj-9B-Gao" firstAttribute="leading" secondItem="5Ml-s5-4vm" secondAttribute="leading" id="jHM-IC-sC9"/>
+                            <constraint firstItem="5Ml-s5-4vm" firstAttribute="trailing" secondItem="qpj-9B-Gao" secondAttribute="trailing" id="lDa-sl-dkW"/>
+                            <constraint firstItem="5Ml-s5-4vm" firstAttribute="top" secondItem="WEQ-cD-p65" secondAttribute="bottom" id="slf-wF-7sa"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="SZX-hX-cJG"/>
                     <connections>
+                        <outlet property="collectionView" destination="qpj-9B-Gao" id="Wd9-62-ROg"/>
                         <outlet property="mapView" destination="5Ml-s5-4vm" id="oT8-FO-Rve"/>
                     </connections>
                 </viewController>

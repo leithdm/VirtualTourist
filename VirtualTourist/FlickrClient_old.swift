@@ -13,7 +13,10 @@ import Foundation
 //let bboxEdge = 0.05
 let bboxEdge = 0.1
 
-class FlickrClient {
+class FlickrClient_old {
+	
+	
+	
 	
 	static let sharedInstance = FlickrClient()
 	private let session = NSURLSession.sharedSession()
