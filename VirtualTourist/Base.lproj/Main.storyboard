@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Virtual Tourist-->
@@ -87,7 +88,7 @@
                                     <navigationItem title="New Collection" id="k2L-Z8-DiU"/>
                                 </items>
                             </navigationBar>
-                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="qpj-9B-Gao">
+                            <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" indicatorStyle="black" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="qpj-9B-Gao">
                                 <rect key="frame" x="0.0" y="226" width="600" height="330"/>
                                 <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <collectionViewFlowLayout key="collectionViewLayout" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="oeW-UV-0ey">
@@ -104,19 +105,31 @@
                                             <rect key="frame" x="0.0" y="0.0" width="136" height="136"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="1zd-M5-Sov">
-                                                    <rect key="frame" x="0.0" y="0.0" width="136" height="136"/>
+                                                <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="1zd-M5-Sov">
+                                                    <rect key="frame" x="8" y="8" width="120" height="120"/>
+                                                    <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                                 </imageView>
+                                                <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="zDp-VW-9N6">
+                                                    <rect key="frame" x="48" y="48" width="40" height="40"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="40" id="9Za-gh-Bhr"/>
+                                                        <constraint firstAttribute="height" constant="40" id="XHD-mC-se5"/>
+                                                    </constraints>
+                                                </activityIndicatorView>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
+                                        <color key="backgroundColor" red="0.90196079019999997" green="0.90196079019999997" blue="0.90196079019999997" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>
-                                            <constraint firstAttribute="trailing" secondItem="1zd-M5-Sov" secondAttribute="trailing" id="J5Q-Rq-0oW"/>
-                                            <constraint firstItem="1zd-M5-Sov" firstAttribute="leading" secondItem="0ga-Tn-Djt" secondAttribute="leading" id="WMo-Ss-3yE"/>
-                                            <constraint firstItem="1zd-M5-Sov" firstAttribute="top" secondItem="0ga-Tn-Djt" secondAttribute="top" id="kmk-cP-H8U"/>
-                                            <constraint firstAttribute="bottom" secondItem="1zd-M5-Sov" secondAttribute="bottom" id="mku-H2-8Gt"/>
+                                            <constraint firstItem="1zd-M5-Sov" firstAttribute="top" secondItem="0ga-Tn-Djt" secondAttribute="topMargin" id="HXK-zT-sVp"/>
+                                            <constraint firstItem="1zd-M5-Sov" firstAttribute="bottom" secondItem="0ga-Tn-Djt" secondAttribute="bottomMargin" id="a2U-uc-7Zv"/>
+                                            <constraint firstItem="1zd-M5-Sov" firstAttribute="leading" secondItem="0ga-Tn-Djt" secondAttribute="leadingMargin" id="lTC-6Q-4pO"/>
+                                            <constraint firstItem="1zd-M5-Sov" firstAttribute="trailing" secondItem="0ga-Tn-Djt" secondAttribute="trailingMargin" id="nDA-SI-aQs"/>
+                                            <constraint firstItem="zDp-VW-9N6" firstAttribute="centerX" secondItem="0ga-Tn-Djt" secondAttribute="centerX" id="tkY-GK-fcf"/>
+                                            <constraint firstItem="zDp-VW-9N6" firstAttribute="centerY" secondItem="0ga-Tn-Djt" secondAttribute="centerY" id="xAe-UM-IvP"/>
                                         </constraints>
                                         <connections>
+                                            <outlet property="activityIndicator" destination="zDp-VW-9N6" id="95D-p3-7Gg"/>
                                             <outlet property="flickrImage" destination="1zd-M5-Sov" id="qiO-hR-gw1"/>
                                         </connections>
                                     </collectionViewCell>

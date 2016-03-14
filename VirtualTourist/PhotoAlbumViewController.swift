@@ -21,6 +21,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
 	
+		
 		//MARK: initialize map view
 		mapView.delegate = self
 		mapView.userInteractionEnabled = false
@@ -46,7 +47,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 	}
 	
 	private func getFlickrPhotos() {
-//		activityIndicator.startAnimating()
 		
 //		if pinSelection.photoPropertiesFetchInProgress == true {
 //			return
@@ -71,16 +71,17 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 					print(imageUrlString)
 					print(imageTitle)
 					
-					let photo = Photo(remotePath: imageUrlString)
+					let photo = Photo(imageName: imageTitle, remotePath: imageUrlString)
 					self.photos.append(photo)
+					
+					self.performUIUpdatesOnMain({ () -> Void in
+						self.collectionView.reloadData()
+					})
 					
 //					let photo = Photo(imageName: value[imageTitle] as! String, remotePath: value[imageUrlString] as! String)
 //					print(photo.imageName)
 				}
 			}
-			self.performUIUpdatesOnMain({ () -> Void in
-				self.collectionView.reloadData()
-			})
 		}
 		
 		
@@ -106,10 +107,8 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 */
 	}
 	
-	//MARK: - collection view
-	
-	
-		
+	//MARK: collection view datasource methods
+
 	func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
 			return 1
 	}
@@ -119,21 +118,28 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 	}
 		
 	func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-		
 		let cell = collectionView.dequeueReusableCellWithReuseIdentifier("UICustomCollectionViewCell", forIndexPath: indexPath) as! UICustomCollectionViewCell
 		
+		cell.activityIndicator.startAnimating()
+		
+		cell.backgroundView = UIImageView(image: UIImage(named: "icon"))
+		
+		//have an image, not downloaded yet
 		let photo = photos[indexPath.row]
 		let photoURL = NSURL(string: photo.remotePath)!
-
 		cell.flickrImage.image = UIImage(data: NSData(contentsOfURL: photoURL)!)
 		return cell
 	}
+	
+	//MARK: helper methods
 
 	func performUIUpdatesOnMain(updates: () -> Void) {
 		dispatch_async(dispatch_get_main_queue()) {
 			updates()
 		}
 	}
+
+
 	
  }
 

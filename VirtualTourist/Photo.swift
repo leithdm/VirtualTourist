@@ -10,7 +10,7 @@ import UIKit
 import CoreData
 
 class Photo {
-//	 var imageName: String
+	 var imageName: String
 	 var remotePath: String
 //	 var pin: Pin?
 //	 var didFetchImageData: Bool
@@ -22,10 +22,10 @@ class Photo {
 //		super.init(entity: entity, insertIntoManagedObjectContext: context)
 //	}
 	
-	init(remotePath: String) {
+	init(imageName: String, remotePath: String) {
 //		let entity = NSEntityDescription.entityForName("Photo", inManagedObjectContext: context)!
 //		super.init(entity: entity, insertIntoManagedObjectContext: context)
-//		self.imageName = imageName
+		self.imageName = imageName
 		self.remotePath = remotePath
 //		didFetchImageData = false
 	}

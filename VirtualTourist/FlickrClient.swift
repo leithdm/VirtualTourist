@@ -37,6 +37,7 @@ class FlickrClient {
 		static let Text = "text"
 		static let BoundingBox = "bbox"
 		static let Page = "page"
+		static let PhotosPerPage = "per_page"
 	}
 	
 	struct FlickrParameterValues {
@@ -44,10 +45,9 @@ class FlickrClient {
 		static let APIKey = "fd24760b02ba530ea261db0a3ab9b09e"
 		static let ResponseFormat = "json"
 		static let DisableJSONCallback = "1" /* 1 means "yes" */
-		static let GalleryPhotosMethod = "flickr.galleries.getPhotos"
-		static let GalleryID = "5704-72157622566655097"
 		static let MediumURL = "url_m"
 		static let UseSafeSearch = "1"
+		static let PhotosPerPage = "21"
 	}
 	
 	// MARK: Flickr Response Keys
@@ -98,7 +98,6 @@ class FlickrClient {
 	//MARK: - serach for photos
 	
 	func searchForPhotos(pin: Pin, completionHandler: (data: [[String: AnyObject]]?, error: String?) -> Void) {
-		
 		let methodParameters = [
 			FlickrParameterKeys.Method: FlickrParameterValues.SearchMethod,
 			FlickrParameterKeys.APIKey: FlickrParameterValues.APIKey,
@@ -106,7 +105,8 @@ class FlickrClient {
 			FlickrParameterKeys.SafeSearch: FlickrParameterValues.UseSafeSearch,
 			FlickrParameterKeys.Extras: FlickrParameterValues.MediumURL,
 			FlickrParameterKeys.Format: FlickrParameterValues.ResponseFormat,
-			FlickrParameterKeys.NoJSONCallback: FlickrParameterValues.DisableJSONCallback
+			FlickrParameterKeys.NoJSONCallback: FlickrParameterValues.DisableJSONCallback,
+			FlickrParameterKeys.PhotosPerPage: FlickrParameterValues.PhotosPerPage
 		]
 		
 		let request = NSURLRequest(URL: flickrURLFromParameters(methodParameters))

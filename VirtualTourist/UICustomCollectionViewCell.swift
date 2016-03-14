@@ -11,5 +11,10 @@ import UIKit
 class UICustomCollectionViewCell: UICollectionViewCell {
 	
 	@IBOutlet weak var flickrImage: UIImageView!
+	@IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+
 	
+	override func awakeFromNib() {
+		activityIndicator.hidesWhenStopped = true
+	}
 }
