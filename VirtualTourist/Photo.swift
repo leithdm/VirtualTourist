@@ -7,29 +7,29 @@
 //
 import Foundation
 import UIKit
-import CoreData
 
 class Photo {
+	
 	 var imageId: String
 	 var imageURL: String
 	 var pin: Pin?
 	
 	init(dictionary: [String: AnyObject]) {
 
-		imageId = dictionary["url_m"] as! String
-		imageURL = dictionary["id"] as! String
+		imageId = dictionary["id"] as! String
+		imageURL = dictionary["url_m"] as! String
 	}
 	
-	//images are stored in an imageCache, in the Documents Directory. 
+	//images are retrieved/set in the Documents directory
 	var image: UIImage? {
 		get {
-			print("get")
-			return FlickrClient.Caches.imageCache.imageWithIdentifier("\(imageId).jpg")
+			print("trying to get")
+			return FlickrClient.Caches.imageCache.imageWithIdentifier("\(imageId)")
 		}
 		
 		set {
-			print("set")
-			FlickrClient.Caches.imageCache.storeImage(image, withIdentifier: "\(imageId).jpg")
+			print("trying to set")
+			FlickrClient.Caches.imageCache.storeImage(newValue, withIdentifier: "\(imageId)") //newValue being the default value
 		}
 	}
 	

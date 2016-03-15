@@ -89,23 +89,24 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 		cell.activityIndicator.startAnimating()
 		cell.flickrImage.image = nil
 		
-		if photo.image != nil {
+		if photo.image != nil { //i.e. it is in the Documents Directory and has already been downloaded
 			photoImage = photo.image
 			cell.activityIndicator.stopAnimating()
 		}
-		else { //download data from....???
-			print("i got to here")
-			let task = FlickrClient.sharedInstance.taskForImage(photo.imageId, completionHandler: { (imageData, error) -> Void in
+		else { //download data from the server
+			let task = FlickrClient.sharedInstance.taskForImage(photo.imageURL, completionHandler: { (imageData, error) -> Void in
 				if let data = imageData {
 					let image = UIImage(data: data)
-					photo.image = image
+					photo.image = image //should save it at this point so it gets cached to the docs directory
 					
+					//update the cell
 					self.performUIUpdatesOnMain({ () -> Void in
 						cell.flickrImage.image = image
 						cell.activityIndicator.stopAnimating()
 					})
 				}
 			})
+			//property observer - any time a value is set it cancels the previous NSURLSessionTask
 			cell.taskToCancelifCellIsReused = task
 		}
 		cell.flickrImage.image = photoImage
