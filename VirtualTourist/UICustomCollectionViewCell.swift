@@ -17,4 +17,15 @@ class UICustomCollectionViewCell: UICollectionViewCell {
 	override func awakeFromNib() {
 		activityIndicator.hidesWhenStopped = true
 	}
+	
+	var imageName: String = ""
+	
+	var taskToCancelifCellIsReused: NSURLSessionTask? {
+		
+		didSet {
+			if let taskToCancel = oldValue {
+				taskToCancel.cancel()
+			}
+		}
+	}
 }

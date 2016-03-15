@@ -10,7 +10,7 @@ import Foundation
 
 class FlickrClient {
 	
-	static let sharedInstancde = FlickrClient()
+	static let sharedInstance = FlickrClient()
 	let session = NSURLSession.sharedSession()
 	
 	struct Flickr {
@@ -29,7 +29,6 @@ class FlickrClient {
 	struct FlickrParameterKeys {
 		static let Method = "method"
 		static let APIKey = "api_key"
-		static let GalleryID = "gallery_id"
 		static let Extras = "extras"
 		static let Format = "format"
 		static let NoJSONCallback = "nojsoncallback"
@@ -52,6 +51,7 @@ class FlickrClient {
 	
 	// MARK: Flickr Response Keys
 	struct FlickrResponseKeys {
+		static let Id = "id"
 		static let Status = "stat"
 		static let Photos = "photos"
 		static let Photo = "photo"
@@ -115,14 +115,9 @@ class FlickrClient {
 		let request = NSURLRequest(URL: flickrURLFromParameters(methodParameters))
 		let task = session.dataTaskWithRequest(request) { (data, response, error) in
 			
-			// if an error occurs, print it and re-enable the UI
-			func displayError(error: String) {
-				print(error)
-			}
-			
-			/* GUARD: Was there an error? */
+
 			guard (error == nil) else {
-				completionHandler(data: nil, error: "There was an error with your request: \(error)")
+				completionHandler(data: nil, error: "There was an error with your request: \(error?.localizedDescription)")
 				return
 			}
 			
@@ -145,6 +140,8 @@ class FlickrClient {
 		task.resume()
 	}
 	
+	//MARK: parse the search for photos
+	
 	func parseSearchForPhotos(data: NSData, completionHandler: (result: [[String: AnyObject]]?, error: String?) -> Void) {
 		
 		var parsedResult: AnyObject!
@@ -156,36 +153,21 @@ class FlickrClient {
 			return
 		}
 		
-		/* GUARD: Did Flickr return an error (stat != ok)? */
 		guard let stat = parsedResult[FlickrResponseKeys.Status] as? String where stat == FlickrResponseValues.OKStatus else {
 			completionHandler(result: nil, error: "Flickr API returned an error. See error code and message in \(parsedResult)")
 			return
 		}
 		
-		/* GUARD: Is "photos" key in our result? */
 		guard let photosDictionary = parsedResult[FlickrResponseKeys.Photos] as? [String:AnyObject] else {
 			completionHandler(result: nil, error: "Cannot find keys '\(FlickrResponseKeys.Photos)' in \(parsedResult)")
 			return
 		}
 		
-		/* GUARD: Is the "photo" key in photosDictionary? */
 		guard let photosArray = photosDictionary[FlickrResponseKeys.Photo] as? [[String: AnyObject]] else {
 			completionHandler(result: nil, error: "Cannot find key '\(FlickrResponseKeys.Photo)' in \(photosDictionary)")
 			return
 		}
 		
-		
-		/* GUARD: Is "pages" key in the photosDictionary? */
-		/*
-		guard let totalPages = photosDictionary[FlickrResponseKeys.Pages] as? Int else {
-		completionHandler(result: nil, error: "Cannot find key '\(FlickrResponseKeys.Pages)' in \(photosDictionary)")
-		return
-		}
-		// pick a random page!
-		//			let pageLimit = min(totalPages, 40)
-		//			let randomPage = Int(arc4random_uniform(UInt32(pageLimit))) + 1
-		//			self.displayImageFromFlickrBySearch(methodParameters, withPageNumber: randomPage)
-		*/
 		
 		if photosArray.count == 0 {
 			completionHandler(result: nil, error: "No photos found. Search again")
@@ -193,6 +175,25 @@ class FlickrClient {
 		} else {
 			completionHandler(result: photosArray, error: nil)
 		}
+	}
+	
+	
+	// MARK: - returns a Task for retrieving images from the Documents directory
+	
+	func taskForImage(filePath: String, completionHandler: (imageData: NSData?, error: NSError?) ->  Void) -> NSURLSessionTask {
+		
+		let url = NSURL(string: filePath)!
+		let request = NSURLRequest(URL: url)
+	
+		let task = session.dataTaskWithRequest(request) {data, response, downloadError in
+			if let error = downloadError {
+				completionHandler(imageData: nil, error: error)
+			} else {
+				completionHandler(imageData: data, error: nil)
+			}
+		}
+		task.resume()
+		return task
 	}
 	
 	func performUIUpdatesOnMain(updates: () -> Void) {

@@ -12,8 +12,9 @@ import MapKit
 class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 	
 	
-	var pinSelection: Pin!
-	var photos: [Photo] = []
+	var pin: Pin!
+	var photos = [Photo]() //dummy array for testing. This should really be assigned to each pin
+	
 	@IBOutlet weak var mapView: MKMapView!
 	@IBOutlet weak var collectionView: UICollectionView!
 	
@@ -26,10 +27,10 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 		mapView.delegate = self
 		mapView.userInteractionEnabled = false
 		
-		if let pinSelection = pinSelection {
-			let pinLocation = MKCoordinateRegionMakeWithDistance(pinSelection.coordinate, 100000, 100000)
+		if let pin = pin {
+			let pinLocation = MKCoordinateRegionMakeWithDistance(pin.coordinate, 100000, 100000)
 			mapView.setRegion(pinLocation, animated: false)
-			mapView.addAnnotation(pinSelection)
+			mapView.addAnnotation(pin)
 		}
 		
 		//MARK: initialize collection view
@@ -42,33 +43,28 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
-		getFlickrPhotos()
+		
+		if photos.isEmpty {
+			downloadPhotosFromServer()
+		}
 	}
 	
-	private func getFlickrPhotos() {
-		
-		FlickrClient.sharedInstancde.searchForPhotos(pinSelection) { (data, error) -> Void in
+	//MARK: download flickr photos from the server
+	
+	private func downloadPhotosFromServer() {
+		FlickrClient.sharedInstance.searchForPhotos(pin) { (data, error) -> Void in
 			if let data = data {
-				for (_, value) in data.enumerate() {
-					
-					
-					// GUARD: Does our photo have a key for 'url_m'? */
-					guard let imageUrlString = value[FlickrClient.FlickrResponseKeys.MediumURL] as? String,
-						let imageTitle = value[FlickrClient.FlickrResponseKeys.Title] as? String else {
-							return
-					}
-//					print(imageUrlString)
-//					print(imageTitle)
-					
-					let photo = Photo(imageName: imageTitle, remotePath: imageUrlString)
-					photo.image = UIImage(data: NSData(contentsOfURL: NSURL(string: imageUrlString)!)!)
+				
+				_ = data.map({ (dictionary: [String: AnyObject]) -> Photo in
+					let photo = Photo(dictionary: dictionary)
+					photo.pin = self.pin
 					self.photos.append(photo)
-					
-					self.performUIUpdatesOnMain({ () -> Void in
-						self.collectionView.reloadData()
-					})
-					
-				}
+					return photo
+				})
+				
+				self.performUIUpdatesOnMain({ () -> Void in
+					self.collectionView.reloadData()
+				})
 			}
 		}
 		
@@ -85,23 +81,34 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 	}
 	
 	func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-		let photo = photos[indexPath.row]
+		let photo = photos[indexPath.item]
+		var photoImage = UIImage(named: "icon.gif")
+
 		let cell = collectionView.dequeueReusableCellWithReuseIdentifier("UICustomCollectionViewCell", forIndexPath: indexPath) as! UICustomCollectionViewCell
 		
-		if let localImage = photo.image {
-			cell.flickrImage.image = localImage
-		} else if photo.remotePath == "" {
-			cell.flickrImage.image = UIImage(named: "icon")
+		cell.activityIndicator.startAnimating()
+		cell.flickrImage.image = nil
+		
+		if photo.image != nil {
+			photoImage = photo.image
+			cell.activityIndicator.stopAnimating()
 		}
-			// If the above cases don't work, then we should download the image
-		else {
-			cell.flickrImage.image = UIImage(named: "icon")
-			let photoURL = NSURL(string: photo.remotePath)!
-			performUIUpdatesOnMain({ () -> Void in
-				cell.flickrImage.image = UIImage(data: NSData(contentsOfURL: photoURL)!)
+		else { //download data from....???
+			print("i got to here")
+			let task = FlickrClient.sharedInstance.taskForImage(photo.imageId, completionHandler: { (imageData, error) -> Void in
+				if let data = imageData {
+					let image = UIImage(data: data)
+					photo.image = image
+					
+					self.performUIUpdatesOnMain({ () -> Void in
+						cell.flickrImage.image = image
+						cell.activityIndicator.stopAnimating()
+					})
+				}
 			})
-			
+			cell.taskToCancelifCellIsReused = task
 		}
+		cell.flickrImage.image = photoImage
 		return cell
 	}
 	

@@ -10,25 +10,27 @@ import UIKit
 import CoreData
 
 class Photo {
-	 var imageName: String
-	 var remotePath: String
-//	 var pin: Pin?
+	 var imageId: String
+	 var imageURL: String
+	 var pin: Pin?
 	
+	init(dictionary: [String: AnyObject]) {
+
+		imageId = dictionary["url_m"] as! String
+		imageURL = dictionary["id"] as! String
+	}
+	
+	//images are stored in an imageCache, in the Documents Directory. 
 	var image: UIImage? {
 		get {
-			return FlickrClient.Caches.imageCache.imageWithIdentifier(remotePath)
+			print("get")
+			return FlickrClient.Caches.imageCache.imageWithIdentifier("\(imageId).jpg")
 		}
 		
 		set {
-			FlickrClient.Caches.imageCache.storeImage(image, withIdentifier: remotePath)
-			print("i have been set !")
+			print("set")
+			FlickrClient.Caches.imageCache.storeImage(image, withIdentifier: "\(imageId).jpg")
 		}
-	}
-
-	init(imageName: String, remotePath: String) {
-
-		self.imageName = imageName
-		self.remotePath = remotePath
 	}
 	
 }

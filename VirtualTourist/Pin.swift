@@ -21,6 +21,7 @@ class Pin: NSObject, MKAnnotation {
 	
 	var latitude: CLLocationDegrees
 	var longitude: CLLocationDegrees
+	var photos: [Photo]?
 	
 	init(latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
 		self.latitude = latitude

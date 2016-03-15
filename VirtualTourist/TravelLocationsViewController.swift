@@ -103,7 +103,7 @@ class TravelLocationsViewController: UIViewController {
 	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
 		if segue.identifier == "PhotoAlbumViewController" {
 		let pavc = segue.destinationViewController as! PhotoAlbumViewController
-		pavc.pinSelection = pinSelection
+		pavc.pin = pinSelection
 		}
 	}
 	

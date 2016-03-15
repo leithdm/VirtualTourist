@@ -1,14 +1,17 @@
 //
-//  File.swift
-//  FavoriteActors
+//  ImageCache.swift
+//  VirtualTourist
+//
+//  Created by Darren Leith on 11/03/2016.
+//  Copyright © 2016 Darren Leith. All rights reserved.
 //
 
 import UIKit
 
 class ImageCache {
     
-    private var inMemoryCache = NSCache()
-    
+//    private var inMemoryCache = NSCache()
+	
     // MARK: - Retreiving images
     
     func imageWithIdentifier(identifier: String?) -> UIImage? {
@@ -21,10 +24,10 @@ class ImageCache {
         let path = pathForIdentifier(identifier!)
         
         // First try the memory cache
-        if let image = inMemoryCache.objectForKey(path) as? UIImage {
-            return image
-        }
-        
+//        if let image = inMemoryCache.objectForKey(path) as? UIImage {
+//            return image
+//        }
+		
         // Next Try the hard drive
         if let data = NSData(contentsOfFile: path) {
             return UIImage(data: data)
@@ -40,8 +43,8 @@ class ImageCache {
         
         // If the image is nil, remove images from the cache
         if image == nil {
-            inMemoryCache.removeObjectForKey(path)
-            
+//            inMemoryCache.removeObjectForKey(path)
+			
             do {
                 try NSFileManager.defaultManager().removeItemAtPath(path)
             } catch _ {}
@@ -50,11 +53,12 @@ class ImageCache {
         }
         
         // Otherwise, keep the image in memory
-        inMemoryCache.setObject(image!, forKey: path)
-        
+//        inMemoryCache.setObject(image!, forKey: path)
+		
         // And in documents directory
         let data = UIImagePNGRepresentation(image!)!
         data.writeToFile(path, atomically: true)
+		print("i wrote to doc directory")
     }
     
     // MARK: - Helper
