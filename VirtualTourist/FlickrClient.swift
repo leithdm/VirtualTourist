@@ -17,7 +17,6 @@ class FlickrClient {
 		static let APIScheme = "https"
 		static let APIHost = "api.flickr.com"
 		static let APIPath = "/services/rest"
-		
 		static let SearchBBoxHalfWidth = 1.0
 		static let SearchBBoxHalfHeight = 1.0
 		static let SearchLatRange = (-90.0, 90.0)
@@ -33,9 +32,7 @@ class FlickrClient {
 		static let Format = "format"
 		static let NoJSONCallback = "nojsoncallback"
 		static let SafeSearch = "safe_search"
-		static let Text = "text"
 		static let BoundingBox = "bbox"
-		static let Page = "page"
 		static let PhotosPerPage = "per_page"
 	}
 	
@@ -51,14 +48,9 @@ class FlickrClient {
 	
 	// MARK: Flickr Response Keys
 	struct FlickrResponseKeys {
-		static let Id = "id"
 		static let Status = "stat"
 		static let Photos = "photos"
 		static let Photo = "photo"
-		static let Title = "title"
-		static let MediumURL = "url_m"
-		static let Pages = "pages"
-		static let Total = "total"
 	}
 	
 	// MARK: Flickr Response Values
@@ -70,37 +62,11 @@ class FlickrClient {
 		static let imageCache = ImageCache()
 	}
 	
-	//MARK: - URL from Parameters
+
+	//MARK: download photo properties from the server. Note this does NOT download the image
 	
-	private func flickrURLFromParameters(parameters: [String:AnyObject]) -> NSURL {
-		let components = NSURLComponents()
-		components.scheme = Flickr.APIScheme
-		components.host = Flickr.APIHost
-		components.path = Flickr.APIPath
-		components.queryItems = [NSURLQueryItem]()
+	func downloadPhotoProperties(pin: Pin, completionHandler: (data: [[String: AnyObject]]?, error: String?) -> Void) {
 		
-		for (key, value) in parameters {
-			let queryItem = NSURLQueryItem(name: key, value: "\(value)")
-			components.queryItems!.append(queryItem)
-		}
-		return components.URL!
-	}
-	
-	//MARK: - bounding box
-	
-	private func bboxString(latitude: Double, longitude: Double) -> String {
-		// ensure bbox is bounded by minimum and maximums
-		let minimumLon = max(longitude - Flickr.SearchBBoxHalfWidth, Flickr.SearchLonRange.0)
-		let minimumLat = max(latitude - Flickr.SearchBBoxHalfHeight, Flickr.SearchLatRange.0)
-		let maximumLon = min(longitude + Flickr.SearchBBoxHalfWidth, Flickr.SearchLonRange.1)
-		let maximumLat = min(latitude + Flickr.SearchBBoxHalfHeight, Flickr.SearchLatRange.1)
-		return "\(minimumLon),\(minimumLat),\(maximumLon),\(maximumLat)"
-	}
-	
-	
-	//MARK: - serach for photos
-	
-	func searchForPhotos(pin: Pin, completionHandler: (data: [[String: AnyObject]]?, error: String?) -> Void) {
 		let methodParameters = [
 			FlickrParameterKeys.Method: FlickrParameterValues.SearchMethod,
 			FlickrParameterKeys.APIKey: FlickrParameterValues.APIKey,
@@ -121,20 +87,17 @@ class FlickrClient {
 				return
 			}
 			
-			/* GUARD: Did we get a successful 2XX response? */
 			guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
 				completionHandler(data: nil, error: "Your request returned a status code other than 2xx!")
 				return
 			}
 			
-			/* GUARD: Was there any data returned? */
 			guard let data = data else {
 				completionHandler(data: nil, error: "No data was returned by the request!")
 				return
 			}
 			
 			// parse the data
-			
 			self.parseSearchForPhotos(data, completionHandler: completionHandler)
 		}
 		task.resume()
@@ -168,7 +131,6 @@ class FlickrClient {
 			return
 		}
 		
-		
 		if photosArray.count == 0 {
 			completionHandler(result: nil, error: "No photos found. Search again")
 			return
@@ -178,11 +140,11 @@ class FlickrClient {
 	}
 	
 	
-	// MARK: - returns a Task for retrieving images from the Documents directory
+	// MARK:  returns a Task for downloading images from the server.
 	
-	func taskForImage(filePath: String, completionHandler: (imageData: NSData?, error: NSError?) ->  Void) -> NSURLSessionTask {
+	func taskForDownloadingImage(filePath: String, completionHandler: (imageData: NSData?, error: NSError?) ->  Void) -> NSURLSessionTask {
 		
-		let url = NSURL(string: filePath)!
+		let url = NSURL(string: filePath)! //The filePath will be the url_m of the image
 		let request = NSURLRequest(URL: url)
 	
 		let task = session.dataTaskWithRequest(request) {data, response, downloadError in
@@ -194,6 +156,33 @@ class FlickrClient {
 		}
 		task.resume()
 		return task
+	}
+	
+	//MARK: - URL from Parameters
+	
+	private func flickrURLFromParameters(parameters: [String:AnyObject]) -> NSURL {
+		let components = NSURLComponents()
+		components.scheme = Flickr.APIScheme
+		components.host = Flickr.APIHost
+		components.path = Flickr.APIPath
+		components.queryItems = [NSURLQueryItem]()
+		
+		for (key, value) in parameters {
+			let queryItem = NSURLQueryItem(name: key, value: "\(value)")
+			components.queryItems!.append(queryItem)
+		}
+		return components.URL!
+	}
+	
+	//MARK: - bounding box
+	
+	private func bboxString(latitude: Double, longitude: Double) -> String {
+		// ensure bbox is bounded by minimum and maximums
+		let minimumLon = max(longitude - Flickr.SearchBBoxHalfWidth, Flickr.SearchLonRange.0)
+		let minimumLat = max(latitude - Flickr.SearchBBoxHalfHeight, Flickr.SearchLatRange.0)
+		let maximumLon = min(longitude + Flickr.SearchBBoxHalfWidth, Flickr.SearchLonRange.1)
+		let maximumLat = min(latitude + Flickr.SearchBBoxHalfHeight, Flickr.SearchLatRange.1)
+		return "\(minimumLon),\(minimumLat),\(maximumLon),\(maximumLat)"
 	}
 	
 	func performUIUpdatesOnMain(updates: () -> Void) {

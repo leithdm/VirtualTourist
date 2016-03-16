@@ -12,13 +12,12 @@ class UICustomCollectionViewCell: UICollectionViewCell {
 	
 	@IBOutlet weak var flickrImage: UIImageView!
 	@IBOutlet weak var activityIndicator: UIActivityIndicatorView!
-
+	var imageName: String = ""
 	
 	override func awakeFromNib() {
 		activityIndicator.hidesWhenStopped = true
 	}
 	
-	var imageName: String = ""
 	
 	var taskToCancelifCellIsReused: NSURLSessionTask? {
 		

@@ -11,7 +11,6 @@ import MapKit
 
 class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 	
-	
 	var pin: Pin!
 	var photos = [Photo]() //dummy array for testing. This should really be assigned to each pin
 	
@@ -21,7 +20,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		
 		
 		//MARK: initialize map view
 		mapView.delegate = self
@@ -33,26 +31,22 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 			mapView.addAnnotation(pin)
 		}
 		
-		//MARK: initialize collection view
-		let width = CGRectGetWidth(view.frame) / 3
-		let layout = collectionView!.collectionViewLayout as! UICollectionViewFlowLayout
-		layout.itemSize = CGSize(width: width, height: width) //want them to be square
-		
+		initializeCollectionView()
 	}
-	
+
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
 		
 		if photos.isEmpty {
-			downloadPhotosFromServer()
+			downloadPhotoProperties()
 		}
 	}
 	
-	//MARK: download flickr photos from the server
+	//MARK: download photo properties (photo id and url_m string) from the server. 
 	
-	private func downloadPhotosFromServer() {
-		FlickrClient.sharedInstance.searchForPhotos(pin) { (data, error) -> Void in
+	private func downloadPhotoProperties() {
+		FlickrClient.sharedInstance.downloadPhotoProperties(pin) { (data, error) -> Void in
 			if let data = data {
 				
 				_ = data.map({ (dictionary: [String: AnyObject]) -> Photo in
@@ -67,7 +61,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 				})
 			}
 		}
-		
 	}
 	
 	//MARK: collection view datasource methods
@@ -89,15 +82,16 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 		cell.activityIndicator.startAnimating()
 		cell.flickrImage.image = nil
 		
-		if photo.image != nil { //i.e. it is in the Documents Directory and has already been downloaded
+		if photo.image != nil { //the image has already been downloaded and is in the Documents directory
 			photoImage = photo.image
 			cell.activityIndicator.stopAnimating()
 		}
-		else { //download data from the server
-			let task = FlickrClient.sharedInstance.taskForImage(photo.imageURL, completionHandler: { (imageData, error) -> Void in
+		else {
+			//download the image from the remote server
+			let task = FlickrClient.sharedInstance.taskForDownloadingImage(photo.imageURL, completionHandler: { (imageData, error) -> Void in
 				if let data = imageData {
 					let image = UIImage(data: data)
-					photo.image = image //should save it at this point so it gets cached to the docs directory
+					photo.image = image //gets cached to the docs directory using setter
 					
 					//update the cell
 					self.performUIUpdatesOnMain({ () -> Void in
@@ -106,6 +100,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 					})
 				}
 			})
+			
 			//property observer - any time a value is set it cancels the previous NSURLSessionTask
 			cell.taskToCancelifCellIsReused = task
 		}
@@ -120,6 +115,16 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 			updates()
 		}
 	}
+	
+	//MARK: initialize collection view
+	
+	func initializeCollectionView() {
+		//MARK: initialize collection view
+		let width = CGRectGetWidth(view.frame) / 3
+		let layout = collectionView!.collectionViewLayout as! UICollectionViewFlowLayout
+		layout.itemSize = CGSize(width: width, height: width) //want them to be square
+	}
+	
 }
 
 

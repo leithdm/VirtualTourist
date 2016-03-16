@@ -12,63 +12,77 @@ import MapKit
 class TravelLocationsViewController: UIViewController {
 	
 	//MARK: - constants
+	
 	struct Constants {
 		static let pinReuseId = "pin"
 		static let editButtonDone = "Done"
 		static let editButtonEdit = "Edit"
 		static let backButtonOK = "OK"
+		static let segue = "PhotoAlbumViewController"
 	}
-
+	
 	//MARK: - outlets
+	
 	@IBOutlet weak var mapView: MKMapView!
 	@IBOutlet weak var tapPinsToDeleteNavBar: UINavigationBar!
 	@IBOutlet weak var editButton: UIBarButtonItem!
 	
-	
 	//MARK: - properties
+	
 	var inEditMode = false
-	var pinSelection: Pin?
+	var selectedPin: Pin? = nil
+	var dragPinEnded = false
+	var longPressGestureRecognizer: UILongPressGestureRecognizer!
 	
-	
-	var filePath : String {
+	//file path for saving the map state - long/lat/span
+	var mapStateFilePath : String {
 		let manager = NSFileManager.defaultManager()
 		let url = manager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first! as NSURL
-		return url.URLByAppendingPathComponent("mapRegionArchive").path!
+		return url.URLByAppendingPathComponent("mapState").path!
 	}
-
+	
 	
 	//MARK: - lifecycle methods
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		mapView.delegate = self
-		restoreMapRegion(true)
-		
 		navigationItem.backBarButtonItem = UIBarButtonItem(title: Constants.backButtonOK, style: .Plain, target: nil, action: nil)
+		restoreMapState(true)
 		addLongPressPinDropRecognizer()
 	}
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
 		tapPinsToDeleteNavBar.hidden = true
+		selectedPin = nil
 	}
-
+	
 	
 	//MARK: - gesture recognizer
 	
 	func addLongPressPinDropRecognizer() {
-		let longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: "dropAPin:")
+		longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: "dropPin:")
+		longPressGestureRecognizer.minimumPressDuration = 0.4
 		view.addGestureRecognizer(longPressGestureRecognizer)
 	}
 	
 	//MARK: - drop a pin
 	
-	func dropAPin(pinDropRecognizer: UIGestureRecognizer) {
-		if pinDropRecognizer.state == .Began {
+	func dropPin(pinDropRecognizer: UIGestureRecognizer) {
+		//this prevents multiple pins from being dropped
+		if pinDropRecognizer.state != UIGestureRecognizerState.Began {
+			return
+		}
+		
 		let locationInView = pinDropRecognizer.locationInView(mapView)
 		let pinCoordinates = mapView.convertPoint(locationInView, toCoordinateFromView: mapView)
 		let pin = Pin(latitude: pinCoordinates.latitude, longitude: pinCoordinates.longitude)
 		mapView.addAnnotation(pin)
-		}
+		displayEditButton()
+		
+		//TODO: pre-fetch
+		
 	}
 	
 	//MARK: - in edit mode
@@ -76,52 +90,62 @@ class TravelLocationsViewController: UIViewController {
 	@IBAction func didSelectEditMode(sender: UIBarButtonItem) {
 		editing = editing == true ? false: true
 		
-		if editing {
+		if editing == true {
 			editButton.title = Constants.editButtonDone
+			removeDropPinGestureRecognizer()
 		} else {
 			editButton.title = Constants.editButtonEdit
+			addLongPressPinDropRecognizer()
 		}
-		statusTapPinDeleteNavBar()
-		statusEditButtonEnabled()
+		displayDeleteToolBar()
+		displayEditButton()
+	}
+	
+	func removeDropPinGestureRecognizer() {
+		view.removeGestureRecognizer(longPressGestureRecognizer)
 	}
 	
 	//helper functions
-	func statusTapPinDeleteNavBar() {
-		if editing {
+	func displayDeleteToolBar() {
+		if editing == true {
 			tapPinsToDeleteNavBar.hidden = false
 		} else {
 			tapPinsToDeleteNavBar.hidden = true
 		}
 	}
 	
-	func statusEditButtonEnabled() {
-		//TODO: -
+	func displayEditButton() {
+		editButton.enabled = true
 	}
+	
+	func deletePin(pin: Pin) {
+		mapView.removeAnnotation(pin)
+	}
+	
 	
 	//MARK: - prepare for segue
 	
 	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
 		if segue.identifier == "PhotoAlbumViewController" {
-		let pavc = segue.destinationViewController as! PhotoAlbumViewController
-		pavc.pin = pinSelection
+			let pavc = segue.destinationViewController as! PhotoAlbumViewController
+			pavc.pin = selectedPin
 		}
 	}
 	
-	//MARK: save map state
+	//MARK: save and restore map state
 	
-	func saveMapRegion() {
+	func saveMapState() {
 		let dictionary = [
 			"latitude" : mapView.region.center.latitude,
 			"longitude" : mapView.region.center.longitude,
 			"latitudeDelta" : mapView.region.span.latitudeDelta,
 			"longitudeDelta" : mapView.region.span.longitudeDelta
 		]
-		NSKeyedArchiver.archiveRootObject(dictionary, toFile: filePath)
+		NSKeyedArchiver.archiveRootObject(dictionary, toFile: mapStateFilePath)
 	}
 	
-	func restoreMapRegion(animated: Bool) {
-		// if we can unarchive a dictionary, we will use it to set the map back to its previous center and span
-		if let regionDictionary = NSKeyedUnarchiver.unarchiveObjectWithFile(filePath) as? [String : AnyObject] {
+	func restoreMapState(animated: Bool) {
+		if let regionDictionary = NSKeyedUnarchiver.unarchiveObjectWithFile(mapStateFilePath) as? [String : AnyObject] {
 			let longitude = regionDictionary["longitude"] as! CLLocationDegrees
 			let latitude = regionDictionary["latitude"] as! CLLocationDegrees
 			let center = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
@@ -144,25 +168,52 @@ extension TravelLocationsViewController: MKMapViewDelegate {
 		var pinView = mapView.dequeueReusableAnnotationViewWithIdentifier(Constants.pinReuseId) as? MKPinAnnotationView
 		if pinView == nil {
 			pinView = MKPinAnnotationView(annotation: annotation, reuseIdentifier: Constants.pinReuseId)
-			pinView!.animatesDrop = true
-			pinView!.draggable = true
-			pinView!.pinTintColor = UIColor.purpleColor()
-		}
-		else {
+		} 	else {
 			pinView!.annotation = annotation
 		}
+		
+		pinView!.draggable = true
+		pinView!.animatesDrop = true
+		pinView!.pinTintColor = UIColor.purpleColor()
+		pinView!.setSelected(true, animated: false)
 		return pinView
 	}
 	
 	func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
+		
+		mapView.deselectAnnotation(view.annotation, animated: false)
+		view.setSelected(true, animated: false)
+		
 		let pin = view.annotation as! Pin
-		pinSelection = pin
-		performSegueWithIdentifier("PhotoAlbumViewController", sender: self)
+		
+		if dragPinEnded == true {
+			//TODO: method to update the pin fetching in the background
+			print("drag pin ended is true")
+			dragPinEnded = false
+			return
+		}
+		
+		if editing == true {
+			deletePin(pin)
+		} else {
+			selectedPin = pin
+			performSegueWithIdentifier(Constants.segue, sender: self)
+		}
+	}
+	
+	func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
+		
+		// track the immediate result of an .Ending pin drag state
+		if newState == MKAnnotationViewDragState.Ending {
+			dragPinEnded = true
+		}
 	}
 	
 	//any time map is moved save the map state
 	func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
-		saveMapRegion()
+		saveMapState()
 	}
+	
+	
 }
 

@@ -17,6 +17,10 @@ class Pin: NSObject, MKAnnotation {
 			let location = CLLocationCoordinate2DMake(latitude, longitude)
 			return location
 		}
+		set { //set is required for dragging the pin
+			latitude = newValue.latitude
+			longitude = newValue.longitude
+		}
 	}
 	
 	var latitude: CLLocationDegrees

@@ -10,7 +10,7 @@ import UIKit
 
 class ImageCache {
 	
-    // MARK: retreiving images
+    // MARK: retreiving images from Documents directory
     
     func imageWithIdentifier(identifier: String?) -> UIImage? {
         
@@ -20,8 +20,6 @@ class ImageCache {
         }
         
         let path = pathForIdentifier(identifier!)
-	
-        // check the hard drive
         if let data = NSData(contentsOfFile: path) {
             return UIImage(data: data)
         }
@@ -29,7 +27,7 @@ class ImageCache {
         return nil
     }
     
-    // MARK: saving images
+    // MARK: saving images to the Documents directory
     
     func storeImage(image: UIImage?, withIdentifier identifier: String) {
         let path = pathForIdentifier(identifier)
@@ -43,18 +41,16 @@ class ImageCache {
             return
         }
 	
-		print("gonna try store it")
         // otherwise keep it in documents directory
         let data = UIImagePNGRepresentation(image!)!
         data.writeToFile(path, atomically: true)
     }
     
-    // MARK: helper
+    // MARK: helper methods
     
     func pathForIdentifier(identifier: String) -> String {
         let documentsDirectoryURL: NSURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
         let fullURL = documentsDirectoryURL.URLByAppendingPathComponent(identifier)
-        
         return fullURL.path!
     }
 }
