@@ -16,8 +16,13 @@ class Photo {
 	
 	init(dictionary: [String: AnyObject]) {
 
-		imageId = dictionary["id"] as! String
-		imageURL = dictionary["url_m"] as! String
+		imageId = dictionary[FlickrClient.FlickrParameterKeys.Id] as! String
+		
+		//computed property to convert the downloaded url_m to a small version of the image by replacing *.jpg" with *_s.jpg*
+		imageURL = {
+			let url = dictionary[FlickrClient.FlickrParameterKeys.URL_M] as! String
+			return url.stringByReplacingOccurrencesOfString(FlickrClient.FlickrParameterKeys.JPEG, withString: FlickrClient.FlickrParameterKeys.smallJPEG)
+		}()
 	}
 	
 	//images are retrieved/set via the Documents directory

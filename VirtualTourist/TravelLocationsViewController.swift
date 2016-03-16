@@ -188,7 +188,6 @@ extension TravelLocationsViewController: MKMapViewDelegate {
 		
 		if dragPinEnded == true {
 			//TODO: method to update the pin fetching in the background
-			print("drag pin ended is true")
 			dragPinEnded = false
 			return
 		}

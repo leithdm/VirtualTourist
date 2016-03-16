@@ -75,11 +75,13 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 	
 	func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
 		let photo = photos[indexPath.item]
-		var photoImage = UIImage(named: "icon.gif")
+		var photoImage = UIImage(named: "noPhoto.png")
 
 		let cell = collectionView.dequeueReusableCellWithReuseIdentifier("UICustomCollectionViewCell", forIndexPath: indexPath) as! UICustomCollectionViewCell
 		
+		cell.setUpActivityIndicator(cell)
 		cell.activityIndicator.startAnimating()
+
 		cell.flickrImage.image = nil
 		
 		if photo.image != nil { //the image has already been downloaded and is in the Documents directory

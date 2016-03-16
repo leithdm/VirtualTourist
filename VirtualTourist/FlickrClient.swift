@@ -17,15 +17,21 @@ class FlickrClient {
 		static let APIScheme = "https"
 		static let APIHost = "api.flickr.com"
 		static let APIPath = "/services/rest"
+        static let photoSourceURL = "https://farm{farmId}.staticflickr.com/{serverId}/{photoId}_{secret}_{imageSize}.jpg"
 		static let SearchBBoxHalfWidth = 1.0
 		static let SearchBBoxHalfHeight = 1.0
 		static let SearchLatRange = (-90.0, 90.0)
 		static let SearchLonRange = (-180.0, 180.0)
+		static let FlickrMaximumPageReturn = 40
 	}
 	
 	
 	// MARK: Flickr Parameter Keys
 	struct FlickrParameterKeys {
+		static let Id = "id"
+		static let JPEG = ".jpg"
+		static let smallJPEG = "_s.jpg"
+		static let URL_M = "url_m"
 		static let Method = "method"
 		static let APIKey = "api_key"
 		static let Extras = "extras"
@@ -34,6 +40,7 @@ class FlickrClient {
 		static let SafeSearch = "safe_search"
 		static let BoundingBox = "bbox"
 		static let PhotosPerPage = "per_page"
+		static let Page = "page"
 	}
 	
 	struct FlickrParameterValues {
@@ -51,6 +58,7 @@ class FlickrClient {
 		static let Status = "stat"
 		static let Photos = "photos"
 		static let Photo = "photo"
+		static let Pages = "pages"
 	}
 	
 	// MARK: Flickr Response Values
@@ -62,12 +70,62 @@ class FlickrClient {
 		static let imageCache = ImageCache()
 	}
 	
-
+	
 	//MARK: download photo properties from the server. Note this does NOT download the image
 	
 	func downloadPhotoProperties(pin: Pin, completionHandler: (data: [[String: AnyObject]]?, error: String?) -> Void) {
 		
-		let methodParameters = [
+		//first query the server for a random page number
+		self.getRandomPageNumber(pin) { (randomPageNumber, error) -> Void in
+			
+			guard error == nil else {
+				completionHandler(data: nil, error: "Error obtaining random page number from server")
+				return
+			}
+			
+			let methodParameters: [String: AnyObject] = [
+				FlickrParameterKeys.Method: FlickrParameterValues.SearchMethod,
+				FlickrParameterKeys.APIKey: FlickrParameterValues.APIKey,
+				FlickrParameterKeys.BoundingBox: self.bboxString(pin.latitude, longitude: pin.longitude),
+				FlickrParameterKeys.SafeSearch: FlickrParameterValues.UseSafeSearch,
+				FlickrParameterKeys.Extras: FlickrParameterValues.MediumURL,
+				FlickrParameterKeys.Format: FlickrParameterValues.ResponseFormat,
+				FlickrParameterKeys.NoJSONCallback: FlickrParameterValues.DisableJSONCallback,
+				FlickrParameterKeys.PhotosPerPage: FlickrParameterValues.PhotosPerPage,
+				FlickrParameterKeys.Page: randomPageNumber!
+			]
+			
+			let request = NSURLRequest(URL: self.flickrURLFromParameters(methodParameters))
+			let task = self.session.dataTaskWithRequest(request) { (data, response, error) in
+				
+				guard (error == nil) else {
+					completionHandler(data: nil, error: "There was an error with your request: \(error?.localizedDescription)")
+					return
+				}
+				
+				guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
+					completionHandler(data: nil, error: "Your request returned a status code other than 2xx!")
+					return
+				}
+				
+				guard let data = data else {
+					completionHandler(data: nil, error: "No data was returned by the request!")
+					return
+				}
+				
+				// parse the data
+				self.parseSearchForPhotos(data, completionHandler: completionHandler)
+			}
+			task.resume()
+		}
+	}
+	
+	
+	//MARK: get random page number
+	
+	func getRandomPageNumber(pin: Pin, completionHandler: (randomPageNumber: Int?, error: String?) -> Void) {
+		
+		let methodParameters: [String: AnyObject] = [
 			FlickrParameterKeys.Method: FlickrParameterValues.SearchMethod,
 			FlickrParameterKeys.APIKey: FlickrParameterValues.APIKey,
 			FlickrParameterKeys.BoundingBox: bboxString(pin.latitude, longitude: pin.longitude),
@@ -75,35 +133,71 @@ class FlickrClient {
 			FlickrParameterKeys.Extras: FlickrParameterValues.MediumURL,
 			FlickrParameterKeys.Format: FlickrParameterValues.ResponseFormat,
 			FlickrParameterKeys.NoJSONCallback: FlickrParameterValues.DisableJSONCallback,
-			FlickrParameterKeys.PhotosPerPage: FlickrParameterValues.PhotosPerPage
+			FlickrParameterKeys.PhotosPerPage: 1 //we only need to get 1 here, as only interested in the total no. of pages parameter
 		]
 		
 		let request = NSURLRequest(URL: flickrURLFromParameters(methodParameters))
 		let task = session.dataTaskWithRequest(request) { (data, response, error) in
 			
-
+			
 			guard (error == nil) else {
-				completionHandler(data: nil, error: "There was an error with your request: \(error?.localizedDescription)")
+				completionHandler(randomPageNumber: nil, error: "There was an error with your request: \(error?.localizedDescription)")
 				return
 			}
 			
 			guard let statusCode = (response as? NSHTTPURLResponse)?.statusCode where statusCode >= 200 && statusCode <= 299 else {
-				completionHandler(data: nil, error: "Your request returned a status code other than 2xx!")
+				completionHandler(randomPageNumber: nil, error: "Your request returned a status code other than 2xx!")
 				return
 			}
 			
 			guard let data = data else {
-				completionHandler(data: nil, error: "No data was returned by the request!")
+				completionHandler(randomPageNumber: nil, error: "No data was returned by the request!")
 				return
 			}
 			
 			// parse the data
-			self.parseSearchForPhotos(data, completionHandler: completionHandler)
+			self.parseSearchForRandomPageNumber(data, completionHandler: completionHandler)
 		}
 		task.resume()
 	}
 	
-	//MARK: parse the search for photos
+	//MARK: parse search for random page number
+	
+	func parseSearchForRandomPageNumber(data: NSData, completionHandler: (randomPageNumber: Int?, error: String?) -> Void) {
+		
+		var parsedResult: AnyObject!
+		
+		do {
+			parsedResult = try NSJSONSerialization.JSONObjectWithData(data, options: .AllowFragments)
+		} catch {
+			completionHandler(randomPageNumber: nil, error: "Could not parse the data as JSON: '\(data)'")
+			return
+		}
+		
+		guard let stat = parsedResult[FlickrResponseKeys.Status] as? String where stat == FlickrResponseValues.OKStatus else {
+			completionHandler(randomPageNumber: nil, error: "Flickr API returned an error. See error code and message in \(parsedResult)")
+			return
+		}
+		
+		guard let photosDictionary = parsedResult[FlickrResponseKeys.Photos] as? [String:AnyObject] else {
+			completionHandler(randomPageNumber: nil, error: "Cannot find keys '\(FlickrResponseKeys.Photos)' in \(parsedResult)")
+			return
+		}
+		
+		/* GUARD: Is "pages" key in the photosDictionary? */
+		guard let totalPages = photosDictionary[FlickrResponseKeys.Pages] as? Int else {
+			completionHandler(randomPageNumber: nil, error: "Cannot find key '\(FlickrResponseKeys.Pages)' in \(photosDictionary)")
+			return
+		}
+		
+		// pick a random page. FlickrMaximumPageReturn is a default value of 40 as per FlickrAPI
+		let pageLimit = min(totalPages, Flickr.FlickrMaximumPageReturn)
+		let randomPage = Int(arc4random_uniform(UInt32(pageLimit))) + 1
+		completionHandler(randomPageNumber: randomPage, error: nil)
+	}
+	
+	
+	//MARK: parse the search for photo properties
 	
 	func parseSearchForPhotos(data: NSData, completionHandler: (result: [[String: AnyObject]]?, error: String?) -> Void) {
 		
@@ -139,14 +233,13 @@ class FlickrClient {
 		}
 	}
 	
-	
 	// MARK:  returns a Task for downloading images from the server.
 	
 	func taskForDownloadingImage(filePath: String, completionHandler: (imageData: NSData?, error: NSError?) ->  Void) -> NSURLSessionTask {
 		
 		let url = NSURL(string: filePath)! //The filePath will be the url_m of the image
 		let request = NSURLRequest(URL: url)
-	
+		
 		let task = session.dataTaskWithRequest(request) {data, response, downloadError in
 			if let error = downloadError {
 				completionHandler(imageData: nil, error: error)

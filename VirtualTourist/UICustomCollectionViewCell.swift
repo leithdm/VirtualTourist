@@ -14,11 +14,6 @@ class UICustomCollectionViewCell: UICollectionViewCell {
 	@IBOutlet weak var activityIndicator: UIActivityIndicatorView!
 	var imageName: String = ""
 	
-	override func awakeFromNib() {
-		activityIndicator.hidesWhenStopped = true
-	}
-	
-	
 	var taskToCancelifCellIsReused: NSURLSessionTask? {
 		
 		didSet {
@@ -26,5 +21,11 @@ class UICustomCollectionViewCell: UICollectionViewCell {
 				taskToCancel.cancel()
 			}
 		}
+	}
+	
+	//initialize the activity indicator
+	func setUpActivityIndicator(cell: UICustomCollectionViewCell) {
+		cell.activityIndicator.hidesWhenStopped = true
+		cell.activityIndicator.activityIndicatorViewStyle = .WhiteLarge
 	}
 }
