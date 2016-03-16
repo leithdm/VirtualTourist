@@ -85,7 +85,7 @@
                                     <color key="textColor" red="0.40000000600000002" green="0.40000000600000002" blue="0.40000000600000002" alpha="1" colorSpace="calibratedRGB"/>
                                 </textAttributes>
                                 <items>
-                                    <navigationItem title="New Collection" id="k2L-Z8-DiU"/>
+                                    <navigationItem id="k2L-Z8-DiU"/>
                                 </items>
                             </navigationBar>
                             <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" indicatorStyle="black" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="qpj-9B-Gao">
@@ -142,7 +142,7 @@
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="qpj-9B-Gao" firstAttribute="leading" secondItem="xvv-zI-khu" secondAttribute="leading" id="1RK-Rc-JdG"/>
-                            <constraint firstItem="xvv-zI-khu" firstAttribute="bottom" secondItem="V7g-G9-b7W" secondAttribute="top" id="3vl-CE-HS7"/>
+                            <constraint firstItem="xvv-zI-khu" firstAttribute="bottom" secondItem="V7g-G9-b7W" secondAttribute="top" constant="44" id="3vl-CE-HS7"/>
                             <constraint firstAttribute="trailing" secondItem="5Ml-s5-4vm" secondAttribute="trailing" id="4o6-pb-crI"/>
                             <constraint firstItem="qpj-9B-Gao" firstAttribute="top" secondItem="WEQ-cD-p65" secondAttribute="bottom" constant="162" id="5MQ-HM-zxj"/>
                             <constraint firstItem="xvv-zI-khu" firstAttribute="top" secondItem="qpj-9B-Gao" secondAttribute="bottom" id="CkG-6w-ked"/>
@@ -153,10 +153,21 @@
                             <constraint firstItem="5Ml-s5-4vm" firstAttribute="top" secondItem="WEQ-cD-p65" secondAttribute="bottom" id="slf-wF-7sa"/>
                         </constraints>
                     </view>
+                    <toolbarItems>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="9YU-Hp-zOd"/>
+                        <barButtonItem title="New Collection" id="83l-bv-TUp">
+                            <connections>
+                                <action selector="toolBarDelete:" destination="MFO-QI-yed" id="f3w-dP-eWI"/>
+                            </connections>
+                        </barButtonItem>
+                        <barButtonItem style="plain" systemItem="flexibleSpace" id="8D2-Jr-TPu"/>
+                    </toolbarItems>
                     <navigationItem key="navigationItem" id="SZX-hX-cJG"/>
+                    <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="collectionView" destination="qpj-9B-Gao" id="Wd9-62-ROg"/>
                         <outlet property="mapView" destination="5Ml-s5-4vm" id="oT8-FO-Rve"/>
+                        <outlet property="toolBarButton" destination="83l-bv-TUp" id="Bmm-g3-8NL"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="C9l-uc-hUU" userLabel="First Responder" sceneMemberID="firstResponder"/>

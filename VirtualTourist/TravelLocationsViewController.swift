@@ -82,8 +82,22 @@ class TravelLocationsViewController: UIViewController {
 		displayEditButton()
 		
 		//TODO: pre-fetch
-		
+		fetchFlickrPhotoProperties(pin)
 	}
+	
+	
+	// Pre-fetch photo data from Flickr as soon as a pin is dropped
+	func fetchFlickrPhotoProperties(pin: Pin) {
+		FlickrClient.sharedInstance.downloadPhotoProperties(pin, completionHandler: { (data, error) -> Void in
+			if let photoProperties = data {
+				for photoProperty in photoProperties {
+					let photo = Photo(dictionary: photoProperty)
+					photo.pin = pin
+				}
+			}
+		})
+	}
+	
 	
 	//MARK: - in edit mode
 	
@@ -187,7 +201,7 @@ extension TravelLocationsViewController: MKMapViewDelegate {
 		let pin = view.annotation as! Pin
 		
 		if dragPinEnded == true {
-			//TODO: method to update the pin fetching in the background
+			//TODO: method to update the pin for new location
 			dragPinEnded = false
 			return
 		}

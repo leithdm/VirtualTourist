@@ -49,7 +49,7 @@ class FlickrClient {
 		static let ResponseFormat = "json"
 		static let DisableJSONCallback = "1" /* 1 means "yes" */
 		static let MediumURL = "url_m"
-		static let UseSafeSearch = "1"
+		static let UseSafeSearch = "0"
 		static let PhotosPerPage = "21"
 	}
 	

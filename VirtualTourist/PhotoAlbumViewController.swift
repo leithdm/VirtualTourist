@@ -12,11 +12,11 @@ import MapKit
 class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 	
 	var pin: Pin!
-	var photos = [Photo]() //dummy array for testing. This should really be assigned to each pin
+//	var photos = [Photo]() //dummy array for testing. This should really be assigned to each pin
 	
 	@IBOutlet weak var mapView: MKMapView!
 	@IBOutlet weak var collectionView: UICollectionView!
-	
+	@IBOutlet weak var toolBarButton: UIBarButtonItem!
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -38,7 +38,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
 		
-		if photos.isEmpty {
+		if pin.photos.isEmpty {
 			downloadPhotoProperties()
 		}
 	}
@@ -46,13 +46,16 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 	//MARK: download photo properties (photo id and url_m string) from the server. 
 	
 	private func downloadPhotoProperties() {
+		
+		toolBarButton.enabled = false
+		
 		FlickrClient.sharedInstance.downloadPhotoProperties(pin) { (data, error) -> Void in
 			if let data = data {
 				
 				_ = data.map({ (dictionary: [String: AnyObject]) -> Photo in
 					let photo = Photo(dictionary: dictionary)
 					photo.pin = self.pin
-					self.photos.append(photo)
+					self.pin.photos.append(photo)
 					return photo
 				})
 				
@@ -70,11 +73,17 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 	}
 	
 	func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		return photos.count
+		return pin.photos.count
 	}
 	
+	@IBAction func toolBarDelete(sender: UIBarButtonItem) {
+		//TODO:
+	}
+	
+	
+	
 	func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-		let photo = photos[indexPath.item]
+		let photo = pin.photos[indexPath.item]
 		var photoImage = UIImage(named: "noPhoto.png")
 
 		let cell = collectionView.dequeueReusableCellWithReuseIdentifier("UICustomCollectionViewCell", forIndexPath: indexPath) as! UICustomCollectionViewCell
@@ -109,6 +118,29 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 		cell.flickrImage.image = photoImage
 		return cell
 	}
+	
+	//MARK: create/delete photos collection
+	
+	private func createNewPhotoCollection() {
+		//TODO: update for CoreData
+		pin.photos.removeAll(keepCapacity: true)
+		downloadPhotoProperties()
+	}
+	
+//	private func deleteSelectedPhotos() {
+//		var photosToDelete = [Photo]()
+//		for indexPath in selectedIndexes {
+//			photosToDelete.append(fetchedResultsController.objectAtIndexPath(indexPath) as! Photo)
+//		}
+//		for photo in photosToDelete {
+//			sharedContext.deleteObject(photo)
+//		}
+//
+//		
+//		selectedIndexes = [NSIndexPath]()
+//		setToolbarButtonTitle()
+//		displayToolbarEnabledState()
+//	}
 	
 	//MARK: helper methods
 	
