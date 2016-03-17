@@ -8,6 +8,7 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 class TravelLocationsViewController: UIViewController {
 	
@@ -33,6 +34,7 @@ class TravelLocationsViewController: UIViewController {
 	var selectedPin: Pin? = nil
 	var dragPinEnded = false
 	var longPressGestureRecognizer: UILongPressGestureRecognizer!
+	var pins = [Pin]()
 	
 	//file path for saving the map state - long/lat/span
 	var mapStateFilePath : String {
@@ -57,6 +59,11 @@ class TravelLocationsViewController: UIViewController {
 		mapView.delegate = self
 		navigationItem.backBarButtonItem = UIBarButtonItem(title: Constants.backButtonOK, style: .Plain, target: nil, action: nil)
 		restoreMapState(true)
+		
+		//core data
+		pins = fetchAllPins()
+		mapView.addAnnotations(pins)
+		
 		addLongPressPinDropRecognizer()
 	}
 	
@@ -64,6 +71,17 @@ class TravelLocationsViewController: UIViewController {
 		super.viewWillAppear(animated)
         displayToolbarHiddenState()
 		selectedPin = nil
+	}
+	
+	//MARK: core data
+	func fetchAllPins() -> [Pin] {
+		let fetchRequest = NSFetchRequest(entityName: "Pin")
+		
+		do {
+		 return try sharedContext.executeFetchRequest(fetchRequest) as! [Pin]
+		} catch {
+			return [Pin]()
+		}
 	}
 	
 	
@@ -85,12 +103,18 @@ class TravelLocationsViewController: UIViewController {
 		
 		let locationInView = pinDropRecognizer.locationInView(mapView)
 		let pinCoordinates = mapView.convertPoint(locationInView, toCoordinateFromView: mapView)
-		let pin = Pin(latitude: pinCoordinates.latitude, longitude: pinCoordinates.longitude)
+		
+		let pin = Pin(latitude: pinCoordinates.latitude, longitude: pinCoordinates.longitude, context: sharedContext)
+		pins.append(pin)
+		CoreDataStackManager.sharedInstance.saveContext()
+		
 		mapView.addAnnotation(pin)
+	
 		displayEditButton()
 		
 		//TODO: pre-fetch
-		fetchFlickrPhotoProperties(pin)
+//		fetchFlickrPhotoProperties(pin)
+		
 	}
 	
 	
@@ -99,12 +123,18 @@ class TravelLocationsViewController: UIViewController {
 		FlickrClient.sharedInstance.downloadPhotoProperties(pin, completionHandler: { (data, error) -> Void in
 			if let photoProperties = data {
 				for photoProperty in photoProperties {
-					let photo = Photo(dictionary: photoProperty)
+					let photo = Photo(dictionary: photoProperty, context: self.sharedContext)
 					photo.pin = pin
 				}
 			}
 		})
 	}
+	
+	//MARK: core data
+	
+	lazy var sharedContext: NSManagedObjectContext = {
+		CoreDataStackManager.sharedInstance.managedObjectContext
+	}()
 	
 	
 	//MARK: - in edit mode

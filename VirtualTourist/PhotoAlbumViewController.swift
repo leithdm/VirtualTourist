@@ -8,6 +8,7 @@
 
 import UIKit
 import MapKit
+import CoreData
 
 class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
 	
@@ -54,18 +55,26 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 			if let data = data {
 				
 				_ = data.map({ (dictionary: [String: AnyObject]) -> Photo in
-					let photo = Photo(dictionary: dictionary)
+					let photo = Photo(dictionary: dictionary, context: self.sharedContext)
 					photo.pin = self.pin
-					self.pin.photos.append(photo)
 					return photo
 				})
 				
 				self.performUIUpdatesOnMain({ () -> Void in
 					self.collectionView.reloadData()
 				})
+				
+				CoreDataStackManager.sharedInstance.saveContext()
 			}
 		}
 	}
+	
+	//MARK: core data
+	
+	lazy var sharedContext: NSManagedObjectContext = {
+		return CoreDataStackManager.sharedInstance.managedObjectContext
+	}()
+	
 	
 	//MARK: collection view datasource methods
 	
