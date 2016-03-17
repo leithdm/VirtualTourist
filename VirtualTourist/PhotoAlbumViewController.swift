@@ -161,9 +161,19 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 	//MARK: create/delete photos collection
 	
 	private func createNewPhotoCollection() {
-		//TODO: update for CoreData
-		pin.photos.removeAll(keepCapacity: true)
+
+		//Empty the current array of photos.
+		for photo in pin.photos {
+			photo.pin = nil
+			sharedContext.deleteObject(photo)
+			removeFromDocumentsDirectory(photo.imageId)
+		}
+		
+		collectionView.reloadData()
+		
+		//Download a new set of photos.
 		downloadPhotoProperties()
+		CoreDataStackManager.sharedInstance.saveContext()
 	}
 	
 	private func deleteSelectedPhotos() {
