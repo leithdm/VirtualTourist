@@ -18,7 +18,7 @@ class Photo {
 
 		imageId = dictionary[FlickrClient.FlickrParameterKeys.Id] as! String
 		
-		//computed property to convert the downloaded url_m to a small version of the image by replacing *.jpg" with *_s.jpg*
+		//convert the downloaded url_m to a small version of the image by replacing *.jpg" with *_s.jpg*
 		imageURL = {
 			let url = dictionary[FlickrClient.FlickrParameterKeys.URL_M] as! String
 			return url.stringByReplacingOccurrencesOfString(FlickrClient.FlickrParameterKeys.JPEG, withString: FlickrClient.FlickrParameterKeys.smallJPEG)

@@ -12,6 +12,10 @@ import MapKit
 
 class Pin: NSObject, MKAnnotation {
 	
+	var latitude: CLLocationDegrees
+	var longitude: CLLocationDegrees
+	var photos = [Photo]()
+	
 	var coordinate: CLLocationCoordinate2D {
 		get {
 			let location = CLLocationCoordinate2DMake(latitude, longitude)
@@ -22,10 +26,6 @@ class Pin: NSObject, MKAnnotation {
 			longitude = newValue.longitude
 		}
 	}
-	
-	var latitude: CLLocationDegrees
-	var longitude: CLLocationDegrees
-	var photos = [Photo]()
 	
 	init(latitude: CLLocationDegrees, longitude: CLLocationDegrees) {
 		self.latitude = latitude

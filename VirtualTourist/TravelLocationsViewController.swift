@@ -24,8 +24,8 @@ class TravelLocationsViewController: UIViewController {
 	//MARK: - outlets
 	
 	@IBOutlet weak var mapView: MKMapView!
-	@IBOutlet weak var tapPinsToDeleteNavBar: UINavigationBar!
 	@IBOutlet weak var editButton: UIBarButtonItem!
+	@IBOutlet weak var deleteToolBar: UIToolbar!
 	
 	//MARK: - properties
 	
@@ -42,6 +42,14 @@ class TravelLocationsViewController: UIViewController {
 	}
 	
 	
+	private func displayToolbarHiddenState() {
+		if inEditMode == true {
+			deleteToolBar.hidden = false
+		} else {
+			deleteToolBar.hidden = true
+		}
+	}
+	
 	//MARK: - lifecycle methods
 	
 	override func viewDidLoad() {
@@ -54,7 +62,7 @@ class TravelLocationsViewController: UIViewController {
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
-		tapPinsToDeleteNavBar.hidden = true
+        displayToolbarHiddenState()
 		selectedPin = nil
 	}
 	
@@ -122,9 +130,9 @@ class TravelLocationsViewController: UIViewController {
 	//helper functions
 	func displayDeleteToolBar() {
 		if editing == true {
-			tapPinsToDeleteNavBar.hidden = false
+			deleteToolBar.hidden = false
 		} else {
-			tapPinsToDeleteNavBar.hidden = true
+			deleteToolBar.hidden = true
 		}
 	}
 	
@@ -189,14 +197,14 @@ extension TravelLocationsViewController: MKMapViewDelegate {
 		pinView!.draggable = true
 		pinView!.animatesDrop = true
 		pinView!.pinTintColor = UIColor.purpleColor()
-		pinView!.setSelected(true, animated: false)
+		pinView!.setSelected(true, animated: true)
 		return pinView
 	}
 	
 	func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
 		
 		mapView.deselectAnnotation(view.annotation, animated: false)
-		view.setSelected(true, animated: false)
+		view.setSelected(true, animated: true)
 		
 		let pin = view.annotation as! Pin
 		

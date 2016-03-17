@@ -9,14 +9,15 @@
 import UIKit
 import MapKit
 
-class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
+class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
 	
 	var pin: Pin!
-//	var photos = [Photo]() //dummy array for testing. This should really be assigned to each pin
+    private var selectedIndexes = [NSIndexPath]()
 	
 	@IBOutlet weak var mapView: MKMapView!
 	@IBOutlet weak var collectionView: UICollectionView!
 	@IBOutlet weak var toolBarButton: UIBarButtonItem!
+	@IBOutlet weak var toolBar: UIToolbar!
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -47,7 +48,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 	
 	private func downloadPhotoProperties() {
 		
-		toolBarButton.enabled = false
+//		toolBarButton.enabled = false
 		
 		FlickrClient.sharedInstance.downloadPhotoProperties(pin) { (data, error) -> Void in
 			if let data = data {
@@ -77,10 +78,12 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 	}
 	
 	@IBAction func toolBarDelete(sender: UIBarButtonItem) {
-		//TODO:
+			if selectedIndexes.count > 0 {
+				deleteSelectedPhotos()
+			} else {
+				createNewPhotoCollection()
+			}
 	}
-	
-	
 	
 	func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
 		let photo = pin.photos[indexPath.item]
@@ -119,6 +122,12 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 		return cell
 	}
 	
+	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
+		selectedIndexes.append(indexPath)
+//		setToolbarButtonTitle()
+//		displayToolbarEnabledState()
+	}
+	
 	//MARK: create/delete photos collection
 	
 	private func createNewPhotoCollection() {
@@ -127,20 +136,14 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource {
 		downloadPhotoProperties()
 	}
 	
-//	private func deleteSelectedPhotos() {
-//		var photosToDelete = [Photo]()
-//		for indexPath in selectedIndexes {
-//			photosToDelete.append(fetchedResultsController.objectAtIndexPath(indexPath) as! Photo)
-//		}
-//		for photo in photosToDelete {
-//			sharedContext.deleteObject(photo)
-//		}
-//
-//		
-//		selectedIndexes = [NSIndexPath]()
+	private func deleteSelectedPhotos() {
+		for indexPath in selectedIndexes {
+			pin.photos.removeAtIndex(indexPath.item)
+		}
+		collectionView.reloadData()
 //		setToolbarButtonTitle()
 //		displayToolbarEnabledState()
-//	}
+	}
 	
 	//MARK: helper methods
 	
