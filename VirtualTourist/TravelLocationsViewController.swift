@@ -112,21 +112,34 @@ class TravelLocationsViewController: UIViewController {
 	
 		displayEditButton()
 		
-		//TODO: pre-fetch
 //		fetchFlickrPhotoProperties(pin)
 		
 	}
 	
-	
 	// Pre-fetch photo data from Flickr as soon as a pin is dropped
 	func fetchFlickrPhotoProperties(pin: Pin) {
+//		if pin.fetchInProgress == true {
+//			return
+//		} else {
+//			pin.fetchInProgress = true
+//		}
+		
 		FlickrClient.sharedInstance.downloadPhotoProperties(pin, completionHandler: { (data, error) -> Void in
+			guard error == nil else {
+				print("error downloading photo properties")
+				return
+			}
+			
 			if let photoProperties = data {
 				for photoProperty in photoProperties {
 					let photo = Photo(dictionary: photoProperty, context: self.sharedContext)
 					photo.pin = pin
 				}
+				dispatch_async(dispatch_get_main_queue()) {
+					CoreDataStackManager.sharedInstance.saveContext()
+				}
 			}
+			pin.fetchInProgress = false
 		})
 	}
 	
@@ -172,6 +185,8 @@ class TravelLocationsViewController: UIViewController {
 	
 	func deletePin(pin: Pin) {
 		mapView.removeAnnotation(pin)
+		sharedContext.deleteObject(pin)
+		CoreDataStackManager.sharedInstance.saveContext()
 	}
 	
 	
@@ -210,6 +225,17 @@ class TravelLocationsViewController: UIViewController {
 			mapView.setRegion(savedRegion, animated: animated)
 		}
 	}
+	
+	func updatePin(pin: Pin) {
+		if !pin.photos.isEmpty {
+			for photo in pin.photos {
+				photo.pin = nil
+			}
+		}
+		
+		CoreDataStackManager.sharedInstance.saveContext()
+		fetchFlickrPhotoProperties(pin)
+	}
 }
 
 //MARK: - MKMapView delegate methods
@@ -238,13 +264,13 @@ extension TravelLocationsViewController: MKMapViewDelegate {
 		
 		let pin = view.annotation as! Pin
 		
-		if dragPinEnded == true {
-			//TODO: method to update the pin for new location
+		if dragPinEnded {
+			updatePin(pin)
 			dragPinEnded = false
 			return
 		}
 		
-		if editing == true {
+		if editing {
 			deletePin(pin)
 		} else {
 			selectedPin = pin

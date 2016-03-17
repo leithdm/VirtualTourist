@@ -25,13 +25,12 @@ class Photo: NSManagedObject {
 		super.init(entity: entity, insertIntoManagedObjectContext: context)
 
 		imageId = dictionary[FlickrClient.FlickrParameterKeys.Id] as! String
-		        imageURL = dictionary["url_m"] as! String
 		
 		//convert the downloaded url_m to a small version of the image by replacing *.jpg" with *_s.jpg*
-//		imageURL = {
-//			let url = dictionary[FlickrClient.FlickrParameterKeys.URL_M] as! String
-//			return url.stringByReplacingOccurrencesOfString(FlickrClient.FlickrParameterKeys.JPEG, withString: FlickrClient.FlickrParameterKeys.smallJPEG)
-//		}()
+		imageURL = {
+			let url = dictionary[FlickrClient.FlickrParameterKeys.URL_M] as! String
+			return url.stringByReplacingOccurrencesOfString(FlickrClient.FlickrParameterKeys.JPEG, withString: FlickrClient.FlickrParameterKeys.smallJPEG)
+		}()
 	}
 	
 	//images are retrieved/set via the Documents directory

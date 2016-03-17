@@ -15,6 +15,7 @@ class Pin: NSManagedObject, MKAnnotation {
 	
 	@NSManaged var latitude: Double
 	@NSManaged var longitude: Double
+	@NSManaged var fetchInProgress : Bool
 	@NSManaged var photos: [Photo]
 	
 	override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
@@ -27,6 +28,7 @@ class Pin: NSManagedObject, MKAnnotation {
 		
 		self.latitude = latitude
 		self.longitude = longitude
+		fetchInProgress  = false
 	}
 	
 	var coordinate: CLLocationCoordinate2D {

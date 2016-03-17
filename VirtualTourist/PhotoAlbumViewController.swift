@@ -49,11 +49,14 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 	
 	private func downloadPhotoProperties() {
 		
-//		toolBarButton.enabled = false
+//		if pin.fetchInProgress == true {
+//			return
+//		} else {
+//			pin.fetchInProgress = true
+//		}
 		
 		FlickrClient.sharedInstance.downloadPhotoProperties(pin) { (data, error) -> Void in
 			if let data = data {
-				
 				_ = data.map({ (dictionary: [String: AnyObject]) -> Photo in
 					let photo = Photo(dictionary: dictionary, context: self.sharedContext)
 					photo.pin = self.pin
@@ -62,10 +65,10 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 				
 				self.performUIUpdatesOnMain({ () -> Void in
 					self.collectionView.reloadData()
+					CoreDataStackManager.sharedInstance.saveContext()
 				})
-				
-				CoreDataStackManager.sharedInstance.saveContext()
 			}
+//			self.pin.fetchInProgress = false
 		}
 	}
 	
@@ -120,6 +123,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 					self.performUIUpdatesOnMain({ () -> Void in
 						cell.flickrImage.image = image
 						cell.activityIndicator.stopAnimating()
+						collectionView.reloadData()
 					})
 				}
 			})
