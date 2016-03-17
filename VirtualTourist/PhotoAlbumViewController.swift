@@ -136,9 +136,26 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 	}
 	
 	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-		selectedIndexes.append(indexPath)
+		let photo = pin.photos[indexPath.item]
+		photo.pin = nil
+		collectionView.deleteItemsAtIndexPaths([indexPath])
+		sharedContext.deleteObject(photo)
+		removeFromDocumentsDirectory(photo.imageId)
+		CoreDataStackManager.sharedInstance.saveContext()
 //		setToolbarButtonTitle()
 //		displayToolbarEnabledState()
+	}
+	
+	func removeFromDocumentsDirectory(identifier: String) {
+		let documentsDirectoryURL: NSURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
+		let fullURL = documentsDirectoryURL.URLByAppendingPathComponent(identifier)
+		let path = fullURL.path!
+		
+		do {
+		try NSFileManager.defaultManager().removeItemAtPath(path)
+		} catch {
+			//
+		}
 	}
 	
 	//MARK: create/delete photos collection
