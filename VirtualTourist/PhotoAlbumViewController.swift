@@ -12,12 +12,17 @@ import CoreData
 
 class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate {
 	
+	struct TitleOfToolBarButton {
+		static let newCollection = "New Collection"
+		static let delete = "Delete Selected Photos"
+	}
+	
 	//MARK: properties
 	
 	var pin: Pin!
-
+	
 	// The selected indexes array keeps all of the indexPaths for cells that are "selected". The array is used inside cellForItemAtIndexPath to lower the
-	//alpha of selected cells.  You can see how the array works by searchign through the code for 'selectedIndexes'
+	//alpha of selected cells.
 	var selectedIndexes = [NSIndexPath]()
 	var insertedIndexPaths: [NSIndexPath]!
 	var deletedIndexPaths: [NSIndexPath]!
@@ -27,9 +32,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 	lazy var fetchedResultsController: NSFetchedResultsController = {
 		let fetchRequest = NSFetchRequest(entityName: "Photo")
 		fetchRequest.predicate = NSPredicate(format: "pin == %@", self.pin);
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "imageId", ascending: true)]
-
-		
+		fetchRequest.sortDescriptors = [NSSortDescriptor(key: "imageId", ascending: true)]
 		let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
 			managedObjectContext: self.sharedContext,
 			sectionNameKeyPath: nil,
@@ -48,16 +51,19 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 	@IBOutlet weak var collectionView: UICollectionView!
 	@IBOutlet weak var toolBarButton: UIBarButtonItem!
 	@IBOutlet weak var toolBar: UIToolbar!
-	
+	@IBOutlet weak var activityIndicator: UIActivityIndicatorView!
 	
 	//MARK: lifecycle methods
+	
 	override func viewDidLoad() {
 		super.viewDidLoad()
-	
 		
-		initializeCollectionView()
-		
+		setToolbarButtonTitle()
+		collectionView.allowsMultipleSelection = true
 		fetchedResultsController.delegate = self
+		activityIndicator.hidesWhenStopped = true
+		activityIndicator.stopAnimating()
+		
 		//start the fetch
 		do {
 			try fetchedResultsController.performFetch()
@@ -68,14 +74,23 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 		if pin.photos.isEmpty {
 			downloadPhotoProperties()
 		}
+	
+	}
+	
+	override func viewDidLayoutSubviews() {
+		super.viewDidLayoutSubviews()
+		
+		// Lay out the collection view so that cells take up 1/3 of the width
+		let width = CGRectGetWidth(view.frame) / 3
+		let layout = collectionView!.collectionViewLayout as! UICollectionViewFlowLayout
+		layout.itemSize = CGSize(width: width, height: width) //want them to be square
 	}
 	
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
-	
+		
 		//initialize map view
-		mapView.delegate = self
 		mapView.userInteractionEnabled = false
 		
 		if let pin = pin {
@@ -87,9 +102,17 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 	
 	//MARK: download photo properties (photo id and url_m string) from the server.
 	
-	 func downloadPhotoProperties() {
-		
+	func downloadPhotoProperties() {
+		activityIndicator.startAnimating()
+
 		FlickrClient.sharedInstance.downloadPhotoProperties(pin) { (data, error) -> Void in
+			
+			guard error == nil else {
+				print("error in downloading photo properties")
+				self.activityIndicator.stopAnimating()
+				return
+			}
+			
 			if let data = data {
 				_ = data.map({ (dictionary: [String: AnyObject]) -> Photo in
 					let photo = Photo(dictionary: dictionary, context: self.sharedContext)
@@ -115,12 +138,39 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 		}
 	}
 	
+	func deleteSelectedPhotos() {
+		var photosToDelete = [Photo]()
+		for indexPath in selectedIndexes {
+			photosToDelete.append(fetchedResultsController.objectAtIndexPath(indexPath) as! Photo)
+		}
+		for photo in photosToDelete {
+			sharedContext.deleteObject(photo)
+		}
+		CoreDataStackManager.sharedInstance.saveContext()
+		
+		selectedIndexes = [NSIndexPath]()
+		setToolbarButtonTitle()
+		displayToolbarEnabledState()
+	}
+	
+	func createNewPhotoCollection() {
+		if let fetchedObjects = fetchedResultsController.fetchedObjects {
+			for object in fetchedObjects {
+				let photo = object as! Photo
+				sharedContext.deleteObject(photo)
+			}
+			CoreDataStackManager.sharedInstance.saveContext()
+		}
+		downloadPhotoProperties()
+	}
+	
+	
 	
 	//MARK: collection view datasource methods
 	
 	func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
 		return 1
-//		return self.fetchedResultsController.sections?.count ?? 0
+		//		return self.fetchedResultsController.sections?.count ?? 0
 	}
 	
 	func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -155,59 +205,37 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 				}
 			})
 		}
+		
+		if let _ = selectedIndexes.indexOf(indexPath) {
+			cell.selectedColor.alpha = 0.8
+		} else {
+			cell.selectedColor.alpha = 0.0
+		}
 	}
 	
 	//MARK: collection view delegate methods
 	
 	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-		let photo = pin.photos[indexPath.item]
-		photo.pin = nil
-		collectionView.deleteItemsAtIndexPaths([indexPath])
-		sharedContext.deleteObject(photo)
-		removeFromDocumentsDirectory(photo.imageId)
-		CoreDataStackManager.sharedInstance.saveContext()
-		//		setToolbarButtonTitle()
-		//		displayToolbarEnabledState()
+        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! PhotoCell
+	
+		selectedIndexes.append(indexPath)
+		
+		configureCell(cell, atIndexPath: indexPath)
+		setToolbarButtonTitle()
+		displayToolbarEnabledState()
 	}
 	
-	func removeFromDocumentsDirectory(identifier: String) {
-		let documentsDirectoryURL: NSURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
-		let fullURL = documentsDirectoryURL.URLByAppendingPathComponent(identifier)
-		let path = fullURL.path!
+	func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
+		let cell = collectionView.cellForItemAtIndexPath(indexPath) as! PhotoCell
 		
-		do {
-			try NSFileManager.defaultManager().removeItemAtPath(path)
-		} catch {
-			//
+		if let index = selectedIndexes.indexOf(indexPath) {
+			selectedIndexes.removeAtIndex(index)
 		}
+		configureCell(cell, atIndexPath: indexPath)
+		setToolbarButtonTitle()
+		displayToolbarEnabledState()
 	}
 	
-	//MARK: create/delete photos collection
-	
-	func createNewPhotoCollection() {
-		
-		//Empty the current array of photos.
-		for photo in pin.photos {
-			photo.pin = nil
-			sharedContext.deleteObject(photo)
-			removeFromDocumentsDirectory(photo.imageId)
-		}
-		
-		collectionView.reloadData()
-		
-		//Download a new set of photos.
-		downloadPhotoProperties()
-		CoreDataStackManager.sharedInstance.saveContext()
-	}
-	
-	func deleteSelectedPhotos() {
-		for indexPath in selectedIndexes {
-			pin.photos.removeAtIndex(indexPath.item)
-		}
-		collectionView.reloadData()
-		//		setToolbarButtonTitle()
-		//		displayToolbarEnabledState()
-	}
 	
 	// MARK: - NSFetchedResultsController delegates
 	
@@ -215,9 +243,8 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 		insertedIndexPaths = [NSIndexPath]()
 		deletedIndexPaths = [NSIndexPath]()
 		updatedIndexPaths = [NSIndexPath]()
-		
-		//TODO: activity indicator
-		//self.activityIndicator.stopAnimating()
+	
+		self.activityIndicator.stopAnimating()
 	}
 	
 	func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
@@ -255,17 +282,20 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 		}
 	}
 	
-	//MARK: initialize collection view
+	private func setToolbarButtonTitle() {
+		if selectedIndexes.count > 0 {
+			toolBarButton.title = TitleOfToolBarButton.delete
+		} else {
+			toolBarButton.title = TitleOfToolBarButton.newCollection
+		}
+	}
 	
-	func initializeCollectionView() {
-		//MARK: initialize collection view
-		let width = CGRectGetWidth(view.frame) / 3
-		let layout = collectionView!.collectionViewLayout as! UICollectionViewFlowLayout
-		layout.itemSize = CGSize(width: width, height: width) //want them to be square
+	private func displayToolbarEnabledState() {
+		if toolBarButton.title == TitleOfToolBarButton.newCollection {
+			toolBarButton.enabled = false
+		} else {
+			toolBarButton.enabled = true
+		}
 	}
 }
 
-
-extension PhotoAlbumViewController: MKMapViewDelegate {
-	
-}

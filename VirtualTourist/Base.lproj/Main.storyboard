@@ -76,9 +76,6 @@
                         <subviews>
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="5Ml-s5-4vm">
                                 <rect key="frame" x="0.0" y="64" width="600" height="165"/>
-                                <constraints>
-                                    <constraint firstAttribute="height" constant="165" id="1dB-dK-ltQ"/>
-                                </constraints>
                             </mapView>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="owm-jx-i0N">
                                 <rect key="frame" x="0.0" y="556" width="600" height="44"/>
@@ -120,21 +117,30 @@
                                                         <constraint firstAttribute="height" constant="40" id="XHD-mC-se5"/>
                                                     </constraints>
                                                 </activityIndicatorView>
+                                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hOG-vU-j6z">
+                                                    <rect key="frame" x="0.0" y="0.0" width="136" height="136"/>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                </view>
                                             </subviews>
                                             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                         </view>
                                         <color key="backgroundColor" red="0.90196079019999997" green="0.90196079019999997" blue="0.90196079019999997" alpha="1" colorSpace="calibratedRGB"/>
                                         <constraints>
+                                            <constraint firstItem="hOG-vU-j6z" firstAttribute="top" secondItem="0ga-Tn-Djt" secondAttribute="top" id="3Ux-lZ-nbO"/>
                                             <constraint firstItem="1zd-M5-Sov" firstAttribute="top" secondItem="0ga-Tn-Djt" secondAttribute="topMargin" id="HXK-zT-sVp"/>
+                                            <constraint firstAttribute="bottom" secondItem="hOG-vU-j6z" secondAttribute="bottom" id="ZjM-ID-vwt"/>
                                             <constraint firstItem="1zd-M5-Sov" firstAttribute="bottom" secondItem="0ga-Tn-Djt" secondAttribute="bottomMargin" id="a2U-uc-7Zv"/>
                                             <constraint firstItem="1zd-M5-Sov" firstAttribute="leading" secondItem="0ga-Tn-Djt" secondAttribute="leadingMargin" id="lTC-6Q-4pO"/>
                                             <constraint firstItem="1zd-M5-Sov" firstAttribute="trailing" secondItem="0ga-Tn-Djt" secondAttribute="trailingMargin" id="nDA-SI-aQs"/>
+                                            <constraint firstItem="hOG-vU-j6z" firstAttribute="leading" secondItem="0ga-Tn-Djt" secondAttribute="leading" id="nck-Zz-9Iu"/>
                                             <constraint firstItem="zDp-VW-9N6" firstAttribute="centerX" secondItem="0ga-Tn-Djt" secondAttribute="centerX" id="tkY-GK-fcf"/>
                                             <constraint firstItem="zDp-VW-9N6" firstAttribute="centerY" secondItem="0ga-Tn-Djt" secondAttribute="centerY" id="xAe-UM-IvP"/>
+                                            <constraint firstAttribute="trailing" secondItem="hOG-vU-j6z" secondAttribute="trailing" id="zOv-9O-HGg"/>
                                         </constraints>
                                         <connections>
                                             <outlet property="activityIndicator" destination="zDp-VW-9N6" id="95D-p3-7Gg"/>
                                             <outlet property="flickrImage" destination="1zd-M5-Sov" id="qiO-hR-gw1"/>
+                                            <outlet property="selectedColor" destination="hOG-vU-j6z" id="kab-V4-B3S"/>
                                         </connections>
                                     </collectionViewCell>
                                 </cells>
@@ -143,22 +149,35 @@
                                     <outlet property="delegate" destination="gg3-0I-9Pg" id="l2f-JK-UVI"/>
                                 </connections>
                             </collectionView>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="58D-4k-LKL">
+                                <rect key="frame" x="275" y="122" width="50" height="50"/>
+                                <color key="backgroundColor" red="0.29803922770000002" green="0.29803922770000002" blue="0.29803922770000002" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="NLd-DL-1jM"/>
+                                </constraints>
+                                <color key="color" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            </activityIndicatorView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="qpj-9B-Gao" firstAttribute="trailing" secondItem="5Ml-s5-4vm" secondAttribute="trailing" id="5CV-sj-5d4"/>
-                            <constraint firstItem="owm-jx-i0N" firstAttribute="leading" secondItem="qpj-9B-Gao" secondAttribute="leading" id="BvK-rc-ZpA"/>
-                            <constraint firstItem="5Ml-s5-4vm" firstAttribute="top" secondItem="hCp-zj-iUt" secondAttribute="bottom" id="FCG-Ra-oQi"/>
-                            <constraint firstItem="qpj-9B-Gao" firstAttribute="bottom" secondItem="uV0-Dj-7cE" secondAttribute="top" constant="-44" id="PB6-57-eKn"/>
-                            <constraint firstItem="qpj-9B-Gao" firstAttribute="top" secondItem="hCp-zj-iUt" secondAttribute="bottom" constant="162" id="PnW-YJ-Z4O"/>
-                            <constraint firstItem="qpj-9B-Gao" firstAttribute="leading" secondItem="aOP-R2-IfC" secondAttribute="leading" id="Qoi-1c-iCQ"/>
-                            <constraint firstAttribute="trailing" secondItem="owm-jx-i0N" secondAttribute="trailing" id="cjy-ah-zBt"/>
-                            <constraint firstItem="5Ml-s5-4vm" firstAttribute="leading" secondItem="owm-jx-i0N" secondAttribute="leading" id="iSw-t4-bR4"/>
-                            <constraint firstItem="qpj-9B-Gao" firstAttribute="trailing" secondItem="owm-jx-i0N" secondAttribute="trailing" id="jf7-sq-vZk"/>
-                            <constraint firstItem="owm-jx-i0N" firstAttribute="bottom" secondItem="uV0-Dj-7cE" secondAttribute="top" id="zZe-nN-HZs"/>
+                            <constraint firstItem="qpj-9B-Gao" firstAttribute="leading" secondItem="aOP-R2-IfC" secondAttribute="leading" id="GUh-5n-4Tm"/>
+                            <constraint firstItem="qpj-9B-Gao" firstAttribute="leading" secondItem="5Ml-s5-4vm" secondAttribute="leading" id="LI1-NV-R1s"/>
+                            <constraint firstItem="58D-4k-LKL" firstAttribute="top" secondItem="hCp-zj-iUt" secondAttribute="bottom" constant="58" id="OUm-8W-B4k"/>
+                            <constraint firstItem="qpj-9B-Gao" firstAttribute="top" secondItem="58D-4k-LKL" secondAttribute="bottom" constant="54" id="PaS-It-67a"/>
+                            <constraint firstItem="qpj-9B-Gao" firstAttribute="trailing" secondItem="5Ml-s5-4vm" secondAttribute="trailing" id="S3y-7E-WC4"/>
+                            <constraint firstItem="58D-4k-LKL" firstAttribute="centerY" secondItem="5Ml-s5-4vm" secondAttribute="centerY" id="Spp-P9-UzD"/>
+                            <constraint firstAttribute="trailing" secondItem="owm-jx-i0N" secondAttribute="trailing" id="XUO-mF-LqB"/>
+                            <constraint firstItem="owm-jx-i0N" firstAttribute="bottom" secondItem="uV0-Dj-7cE" secondAttribute="top" id="Yg4-RA-IcU"/>
+                            <constraint firstItem="qpj-9B-Gao" firstAttribute="leading" secondItem="owm-jx-i0N" secondAttribute="leading" id="iTJ-1R-IIT"/>
+                            <constraint firstItem="58D-4k-LKL" firstAttribute="centerX" secondItem="5Ml-s5-4vm" secondAttribute="centerX" id="jD1-CY-ahE"/>
+                            <constraint firstItem="5Ml-s5-4vm" firstAttribute="top" secondItem="hCp-zj-iUt" secondAttribute="bottom" id="nru-cO-B04"/>
+                            <constraint firstItem="owm-jx-i0N" firstAttribute="trailing" secondItem="qpj-9B-Gao" secondAttribute="trailing" id="vcc-UJ-MJ0"/>
+                            <constraint firstItem="qpj-9B-Gao" firstAttribute="top" secondItem="hCp-zj-iUt" secondAttribute="bottom" constant="162" id="x4u-oO-9Vv"/>
+                            <constraint firstItem="owm-jx-i0N" firstAttribute="top" secondItem="qpj-9B-Gao" secondAttribute="bottom" id="zzz-zG-XC9"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="activityIndicator" destination="58D-4k-LKL" id="z5k-vm-5iH"/>
                         <outlet property="collectionView" destination="qpj-9B-Gao" id="TmF-v0-Aaf"/>
                         <outlet property="mapView" destination="5Ml-s5-4vm" id="e1P-bH-vgj"/>
                         <outlet property="toolBar" destination="owm-jx-i0N" id="Upe-Hh-Gew"/>

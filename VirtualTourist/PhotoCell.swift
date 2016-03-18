@@ -13,7 +13,7 @@ class PhotoCell: UICollectionViewCell {
 	@IBOutlet weak var flickrImage: UIImageView!
 	@IBOutlet weak var activityIndicator: UIActivityIndicatorView!
 	var imageName: String = ""
-	
+	@IBOutlet weak var selectedColor: UIView!
 
 	//initialize the activity indicator
 	func setUpActivityIndicator(cell: PhotoCell) {

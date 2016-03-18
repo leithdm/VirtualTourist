@@ -59,6 +59,26 @@ class Photo: NSManagedObject {
 			}
 			}
 			.resume()
+	
+		}
+	
+	
+	//MARK: delete image from documents directory
+	
+	var imageInDocumentsDirectory: NSURL {
+		let documentsDirectoryURL = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first!
+		return documentsDirectoryURL.URLByAppendingPathComponent(imageId)
+	}
+	
+	override func prepareForDeletion() {
+		super.prepareForDeletion()
+		if NSFileManager.defaultManager().fileExistsAtPath(imageInDocumentsDirectory.path!) {
+			do {
+				try NSFileManager.defaultManager().removeItemAtURL(imageInDocumentsDirectory)
+			} catch {
+				NSLog("Couldn't remove image: \(imageId)")
+			}
+		}
 	}
 	
 	
