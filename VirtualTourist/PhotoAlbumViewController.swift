@@ -10,13 +10,40 @@ import UIKit
 import MapKit
 import CoreData
 
-class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
+class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate {
 	
 	//MARK: properties
+	
 	var pin: Pin!
-	private var selectedIndexes = [NSIndexPath]()
+
+	// The selected indexes array keeps all of the indexPaths for cells that are "selected". The array is used inside cellForItemAtIndexPath to lower the
+	//alpha of selected cells.  You can see how the array works by searchign through the code for 'selectedIndexes'
+	var selectedIndexes = [NSIndexPath]()
+	var insertedIndexPaths: [NSIndexPath]!
+	var deletedIndexPaths: [NSIndexPath]!
+	var updatedIndexPaths: [NSIndexPath]!
+	
+	//fetchedResultsController
+	lazy var fetchedResultsController: NSFetchedResultsController = {
+		let fetchRequest = NSFetchRequest(entityName: "Photo")
+		fetchRequest.predicate = NSPredicate(format: "pin == %@", self.pin);
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "imageId", ascending: true)]
+
+		
+		let fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest,
+			managedObjectContext: self.sharedContext,
+			sectionNameKeyPath: nil,
+			cacheName: nil)
+		return fetchedResultsController
+	}()
+	
+	lazy var sharedContext: NSManagedObjectContext = {
+		return CoreDataStackManager.sharedInstance.managedObjectContext
+	}()
+	
 	
 	//MARK: outlets
+	
 	@IBOutlet weak var mapView: MKMapView!
 	@IBOutlet weak var collectionView: UICollectionView!
 	@IBOutlet weak var toolBarButton: UIBarButtonItem!
@@ -26,7 +53,27 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 	//MARK: lifecycle methods
 	override func viewDidLoad() {
 		super.viewDidLoad()
+	
 		
+		initializeCollectionView()
+		
+		fetchedResultsController.delegate = self
+		//start the fetch
+		do {
+			try fetchedResultsController.performFetch()
+		} catch let error as NSError  {
+			print("Error performing NSFetchedResultsController fetch: \(error)")
+		}
+		
+		if pin.photos.isEmpty {
+			downloadPhotoProperties()
+		}
+	}
+	
+	
+	override func viewWillAppear(animated: Bool) {
+		super.viewWillAppear(animated)
+	
 		//initialize map view
 		mapView.delegate = self
 		mapView.userInteractionEnabled = false
@@ -36,28 +83,11 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 			mapView.setRegion(pinLocation, animated: false)
 			mapView.addAnnotation(pin)
 		}
-		
-		initializeCollectionView()
-	}
-	
-	
-	override func viewWillAppear(animated: Bool) {
-		super.viewWillAppear(animated)
-		
-		if pin.photos.isEmpty {
-			downloadPhotoProperties()
-		}
 	}
 	
 	//MARK: download photo properties (photo id and url_m string) from the server.
 	
-	private func downloadPhotoProperties() {
-		
-		//		if pin.fetchInProgress == true {
-		//			return
-		//		} else {
-		//			pin.fetchInProgress = true
-		//		}
+	 func downloadPhotoProperties() {
 		
 		FlickrClient.sharedInstance.downloadPhotoProperties(pin) { (data, error) -> Void in
 			if let data = data {
@@ -68,30 +98,14 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 				})
 				
 				self.performUIUpdatesOnMain({ () -> Void in
-					self.collectionView.reloadData()
 					CoreDataStackManager.sharedInstance.saveContext()
 				})
 			}
-			//			self.pin.fetchInProgress = false
+			//self.pin.fetchInProgress = false
 		}
 	}
 	
-	//MARK: core data
-	
-	lazy var sharedContext: NSManagedObjectContext = {
-		return CoreDataStackManager.sharedInstance.managedObjectContext
-	}()
-	
-	
-	//MARK: collection view datasource methods
-	
-	func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
-		return 1
-	}
-	
-	func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-		return pin.photos.count
-	}
+	//MARK: delete photos
 	
 	@IBAction func toolBarDelete(sender: UIBarButtonItem) {
 		if selectedIndexes.count > 0 {
@@ -101,43 +115,49 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 		}
 	}
 	
+	
+	//MARK: collection view datasource methods
+	
+	func numberOfSectionsInCollectionView(collectionView: UICollectionView) -> Int {
+		return 1
+//		return self.fetchedResultsController.sections?.count ?? 0
+	}
+	
+	func collectionView(collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+		let sectionInfo = fetchedResultsController.sections![section]
+		return sectionInfo.numberOfObjects
+	}
+	
 	func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-		let photo = pin.photos[indexPath.item]
-		var photoImage = UIImage(named: "noPhoto.png")
-		
-		let cell = collectionView.dequeueReusableCellWithReuseIdentifier("UICustomCollectionViewCell", forIndexPath: indexPath) as! UICustomCollectionViewCell
-		
+		let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PhotoCell", forIndexPath: indexPath) as! PhotoCell
+		configureCell(cell, atIndexPath: indexPath)
+		return cell
+	}
+	
+	func configureCell(cell: PhotoCell, atIndexPath indexPath: NSIndexPath) {
+		let photo = fetchedResultsController.objectAtIndexPath(indexPath) as! Photo
 		cell.setUpActivityIndicator(cell)
-		cell.activityIndicator.startAnimating()
 		
-		cell.flickrImage.image = nil
-		
-		if photo.image != nil { //the image has already been downloaded and is in the Documents directory
-			photoImage = photo.image
+		//the image has already been downloaded and is in the Documents directory
+		if let image = photo.image {
 			cell.activityIndicator.stopAnimating()
+			cell.flickrImage.image = image
 		}
-		else {
-			//download the image from the remote server
-			let task = FlickrClient.sharedInstance.taskForDownloadingImage(photo.imageURL, completionHandler: { (imageData, error) -> Void in
-				if let data = imageData {
-					let image = UIImage(data: data)
-					photo.image = image //gets cached to the docs directory using setter
-					
-					//update the cell
+		else { //download the image from the remote server
+			cell.flickrImage.image = UIImage(named: "noPhoto.png")
+			cell.activityIndicator.startAnimating()
+			
+			photo.fetchImageData(photo.imageURL, completionHandler: { (fetchComplete, error) -> Void in
+				if fetchComplete ==  true {
 					self.performUIUpdatesOnMain({ () -> Void in
-						cell.flickrImage.image = image
-						cell.activityIndicator.stopAnimating()
-						collectionView.reloadData()
+						self.collectionView.reloadItemsAtIndexPaths([indexPath])
 					})
 				}
 			})
-			
-			//property observer - any time a value is set it cancels the previous NSURLSessionTask
-			cell.taskToCancelifCellIsReused = task
 		}
-		cell.flickrImage.image = photoImage
-		return cell
 	}
+	
+	//MARK: collection view delegate methods
 	
 	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
 		let photo = pin.photos[indexPath.item]
@@ -164,7 +184,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 	
 	//MARK: create/delete photos collection
 	
-	private func createNewPhotoCollection() {
+	func createNewPhotoCollection() {
 		
 		//Empty the current array of photos.
 		for photo in pin.photos {
@@ -180,13 +200,51 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 		CoreDataStackManager.sharedInstance.saveContext()
 	}
 	
-	private func deleteSelectedPhotos() {
+	func deleteSelectedPhotos() {
 		for indexPath in selectedIndexes {
 			pin.photos.removeAtIndex(indexPath.item)
 		}
 		collectionView.reloadData()
 		//		setToolbarButtonTitle()
 		//		displayToolbarEnabledState()
+	}
+	
+	// MARK: - NSFetchedResultsController delegates
+	
+	func controllerWillChangeContent(controller: NSFetchedResultsController) {
+		insertedIndexPaths = [NSIndexPath]()
+		deletedIndexPaths = [NSIndexPath]()
+		updatedIndexPaths = [NSIndexPath]()
+		
+		//TODO: activity indicator
+		//self.activityIndicator.stopAnimating()
+	}
+	
+	func controller(controller: NSFetchedResultsController, didChangeObject anObject: AnyObject, atIndexPath indexPath: NSIndexPath?, forChangeType type: NSFetchedResultsChangeType, newIndexPath: NSIndexPath?) {
+		switch type {
+		case .Insert:
+			insertedIndexPaths.append(newIndexPath!)
+		case .Delete:
+			deletedIndexPaths.append(indexPath!)
+		case .Update:
+			updatedIndexPaths.append(indexPath!)
+		default:
+			return
+		}
+	}
+	
+	func controllerDidChangeContent(controller: NSFetchedResultsController) {
+		collectionView.performBatchUpdates({
+			for indexPath in self.insertedIndexPaths {
+				self.collectionView.insertItemsAtIndexPaths([indexPath])
+			}
+			for indexPath in self.deletedIndexPaths {
+				self.collectionView.deleteItemsAtIndexPaths([indexPath])
+			}
+			for indexPath in self.updatedIndexPaths {
+				self.collectionView.reloadItemsAtIndexPaths([indexPath])
+			}
+			}, completion: nil)
 	}
 	
 	//MARK: helper methods
@@ -205,7 +263,6 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 		let layout = collectionView!.collectionViewLayout as! UICollectionViewFlowLayout
 		layout.itemSize = CGSize(width: width, height: width) //want them to be square
 	}
-	
 }
 
 

@@ -233,22 +233,21 @@ class FlickrClient {
 		}
 	}
 	
-	// MARK:  returns a Task for downloading images from the server.
+	// MARK:  fetch the actual image from the server
 	
-	func taskForDownloadingImage(filePath: String, completionHandler: (imageData: NSData?, error: NSError?) ->  Void) -> NSURLSessionTask {
-		
+	func fetchImageData(filePath: String, completionHandler: (fetchComplete: Bool?, error: NSError?) ->  Void) {
 		let url = NSURL(string: filePath)! //The filePath will be the url_m of the image
 		let request = NSURLRequest(URL: url)
 		
-		let task = session.dataTaskWithRequest(request) {data, response, downloadError in
-			if let error = downloadError {
-				completionHandler(imageData: nil, error: error)
+		session.dataTaskWithRequest(request) {data, response, error in
+			if let error = error {
+				completionHandler(fetchComplete: false, error: error)
 			} else {
-				completionHandler(imageData: data, error: nil)
+				
+				completionHandler(fetchComplete: true, error: nil)
 			}
 		}
-		task.resume()
-		return task
+		.resume()
 	}
 	
 	//MARK: - URL from Parameters

@@ -44,4 +44,23 @@ class Photo: NSManagedObject {
 		}
 	}
 	
+	// MARK:  fetch the actual image from the server
+	
+	func fetchImageData(filePath: String, completionHandler: (fetchComplete: Bool?, error: NSError?) ->  Void) {
+		let url = NSURL(string: filePath)! //The filePath will be the url_m of the image
+		let request = NSURLRequest(URL: url)
+		
+		NSURLSession.sharedSession().dataTaskWithRequest(request) {data, response, error in
+			if let error = error {
+				completionHandler(fetchComplete: false, error: error)
+			} else {
+				self.image = UIImage(data: data!)
+				completionHandler(fetchComplete: true, error: nil)
+			}
+			}
+			.resume()
+	}
+	
+	
+	
 }

@@ -8,23 +8,15 @@
 
 import UIKit
 
-class UICustomCollectionViewCell: UICollectionViewCell {
+class PhotoCell: UICollectionViewCell {
 	
 	@IBOutlet weak var flickrImage: UIImageView!
 	@IBOutlet weak var activityIndicator: UIActivityIndicatorView!
 	var imageName: String = ""
 	
-	var taskToCancelifCellIsReused: NSURLSessionTask? {
-		
-		didSet {
-			if let taskToCancel = oldValue {
-				taskToCancel.cancel()
-			}
-		}
-	}
-	
+
 	//initialize the activity indicator
-	func setUpActivityIndicator(cell: UICustomCollectionViewCell) {
+	func setUpActivityIndicator(cell: PhotoCell) {
 		cell.activityIndicator.hidesWhenStopped = true
 		cell.activityIndicator.activityIndicatorViewStyle = .WhiteLarge
 	}
