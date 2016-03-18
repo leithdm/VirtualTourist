@@ -12,7 +12,7 @@ import CoreData
 
 class TravelLocationsViewController: UIViewController {
 	
-	//MARK: - constants
+	//MARK: constants
 	
 	struct Constants {
 		static let pinReuseId = "pin"
@@ -22,13 +22,13 @@ class TravelLocationsViewController: UIViewController {
 		static let segue = "PhotoAlbumViewController"
 	}
 	
-	//MARK: - outlets
+	//MARK: outlets
 	
 	@IBOutlet weak var mapView: MKMapView!
 	@IBOutlet weak var editButton: UIBarButtonItem!
 	@IBOutlet weak var deleteToolBar: UIToolbar!
 	
-	//MARK: - properties
+	//MARK: properties
 	
 	var inEditMode = false
 	var selectedPin: Pin? = nil
@@ -36,13 +36,16 @@ class TravelLocationsViewController: UIViewController {
 	var longPressGestureRecognizer: UILongPressGestureRecognizer!
 	var pins = [Pin]()
 	
+	lazy var sharedContext: NSManagedObjectContext = {
+		CoreDataStackManager.sharedInstance.managedObjectContext
+	}()
+	
 	//file path for saving the map state - long/lat/span
 	var mapStateFilePath : String {
 		let manager = NSFileManager.defaultManager()
 		let url = manager.URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask).first! as NSURL
 		return url.URLByAppendingPathComponent("mapState").path!
 	}
-	
 	
 	private func displayToolbarHiddenState() {
 		if inEditMode == true {
@@ -52,7 +55,7 @@ class TravelLocationsViewController: UIViewController {
 		}
 	}
 	
-	//MARK: - lifecycle methods
+	//MARK: lifecycle methods
 	
 	override func viewDidLoad() {
 		super.viewDidLoad()
@@ -82,8 +85,7 @@ class TravelLocationsViewController: UIViewController {
 		}
 	}
 	
-	
-	//MARK: - gesture recognizer
+	//MARK: gesture recognizer
 	
 	func addLongPressPinDropRecognizer() {
 		longPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: "dropPin:")
@@ -91,7 +93,7 @@ class TravelLocationsViewController: UIViewController {
 		view.addGestureRecognizer(longPressGestureRecognizer)
 	}
 	
-	//MARK: - drop a pin
+	//MARK: drop a pin
 	
 	func dropPin(pinDropRecognizer: UIGestureRecognizer) {
 		//this prevents multiple pins from being dropped
@@ -112,7 +114,8 @@ class TravelLocationsViewController: UIViewController {
 		
 	}
 	
-	// Pre-fetch photo data from Flickr as soon as a pin is dropped
+	//MARK: pre-fetch photo data from Flickr as soon as a pin is dropped
+	
 	func preFetchFlickrPhotoProperties(pin: Pin) {
 		if pin.fetchInProgress == true {
 			return
@@ -139,14 +142,8 @@ class TravelLocationsViewController: UIViewController {
 		})
 	}
 	
-	//MARK: core data
 	
-	lazy var sharedContext: NSManagedObjectContext = {
-		CoreDataStackManager.sharedInstance.managedObjectContext
-	}()
-	
-	
-	//MARK: - in edit mode
+	//MARK: in edit mode
 	
 	@IBAction func didSelectEditMode(sender: UIBarButtonItem) {
 		editing = editing == true ? false: true
@@ -166,27 +163,8 @@ class TravelLocationsViewController: UIViewController {
 		view.removeGestureRecognizer(longPressGestureRecognizer)
 	}
 	
-	//helper functions
-	func displayDeleteToolBar() {
-		if editing == true {
-			deleteToolBar.hidden = false
-		} else {
-			deleteToolBar.hidden = true
-		}
-	}
-	
-	func displayEditButton() {
-		editButton.enabled = true
-	}
-	
-	func deletePin(pin: Pin) {
-		mapView.removeAnnotation(pin)
-		sharedContext.deleteObject(pin)
-		CoreDataStackManager.sharedInstance.saveContext()
-	}
-	
-	
-	//MARK: - prepare for segue
+
+	//MARK: prepare for segue
 	
 	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
 		if segue.identifier == "PhotoAlbumViewController" {
@@ -232,9 +210,29 @@ class TravelLocationsViewController: UIViewController {
 		CoreDataStackManager.sharedInstance.saveContext()
 		preFetchFlickrPhotoProperties(pin)
 	}
+	
+	//MARK: helper functions
+	
+	func displayDeleteToolBar() {
+		if editing == true {
+			deleteToolBar.hidden = false
+		} else {
+			deleteToolBar.hidden = true
+		}
+	}
+	
+	func displayEditButton() {
+		editButton.enabled = true
+	}
+	
+	func deletePin(pin: Pin) {
+		mapView.removeAnnotation(pin)
+		sharedContext.deleteObject(pin)
+		CoreDataStackManager.sharedInstance.saveContext()
+	}
 }
 
-//MARK: - MKMapView delegate methods
+//MARK: MKMapView delegate methods
 
 extension TravelLocationsViewController: MKMapViewDelegate {
 	
@@ -282,7 +280,4 @@ extension TravelLocationsViewController: MKMapViewDelegate {
 	func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
 		saveMapState()
 	}
-	
-	
 }
-

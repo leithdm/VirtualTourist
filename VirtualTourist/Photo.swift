@@ -14,6 +14,8 @@ class Photo: NSManagedObject {
 	 @NSManaged var imageId: String
 	 @NSManaged var imageURL: String
 	 @NSManaged var pin: Pin?
+	 @NSManaged var fetchedImage: Bool
+	 var fetchInProgress = false
 	
 	override init(entity: NSEntityDescription, insertIntoManagedObjectContext context: NSManagedObjectContext?) {
 		super.init(entity: entity, insertIntoManagedObjectContext: context)
@@ -47,21 +49,24 @@ class Photo: NSManagedObject {
 	// MARK:  fetch the actual image from the server
 	
 	func fetchImageData(filePath: String, completionHandler: (fetchComplete: Bool?, error: NSError?) ->  Void) {
-		let url = NSURL(string: filePath)! //The filePath will be the url_m of the image
-		let request = NSURLRequest(URL: url)
-		
-		NSURLSession.sharedSession().dataTaskWithRequest(request) {data, response, error in
-			if let error = error {
-				completionHandler(fetchComplete: false, error: error)
-			} else {
-				self.image = UIImage(data: data!)
-				completionHandler(fetchComplete: true, error: nil)
-			}
-			}
-			.resume()
-	
+		if !fetchedImage && !fetchInProgress {
+			fetchInProgress = true
+			
+			let url = NSURL(string: filePath)! //The filePath will be the url_m of the image
+			let request = NSURLRequest(URL: url)
+			
+			NSURLSession.sharedSession().dataTaskWithRequest(request) {data, response, error in
+				if let error = error {
+					completionHandler(fetchComplete: false, error: error)
+				} else {
+					self.image = UIImage(data: data!)
+					completionHandler(fetchComplete: true, error: nil)
+				}
+				self.fetchInProgress = false
+				}
+				.resume()
 		}
-	
+	}
 	
 	//MARK: delete image from documents directory
 	
@@ -76,11 +81,8 @@ class Photo: NSManagedObject {
 			do {
 				try NSFileManager.defaultManager().removeItemAtURL(imageInDocumentsDirectory)
 			} catch {
-				NSLog("Couldn't remove image: \(imageId)")
+				print("Error removing image: \(imageId)")
 			}
 		}
 	}
-	
-	
-	
 }

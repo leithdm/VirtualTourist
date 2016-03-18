@@ -12,9 +12,11 @@ import CoreData
 
 class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate, NSFetchedResultsControllerDelegate {
 	
-	struct TitleOfToolBarButton {
+	struct Constants {
 		static let newCollection = "New Collection"
 		static let delete = "Delete Selected Photos"
+		static let cellIdentifier = "PhotoCell"
+		static let noPhoto = "noPhoto.png"
 	}
 	
 	//MARK: properties
@@ -27,6 +29,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 	var insertedIndexPaths: [NSIndexPath]!
 	var deletedIndexPaths: [NSIndexPath]!
 	var updatedIndexPaths: [NSIndexPath]!
+	var noPhotosDownloading = 0
 	
 	//fetchedResultsController
 	lazy var fetchedResultsController: NSFetchedResultsController = {
@@ -74,7 +77,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 		if pin.photos.isEmpty {
 			downloadPhotoProperties()
 		}
-	
+		
 	}
 	
 	override func viewDidLayoutSubviews() {
@@ -98,6 +101,8 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 			mapView.setRegion(pinLocation, animated: false)
 			mapView.addAnnotation(pin)
 		}
+		
+		toolbarEnabledState()
 	}
 	
 	//MARK: download photo properties (photo id and url_m string) from the server.
@@ -110,7 +115,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 		} else {
 			pin.fetchInProgress = true
 		}
-
+		
 		FlickrClient.sharedInstance.downloadPhotoProperties(pin) { (data, error) -> Void in
 			
 			guard error == nil else {
@@ -156,7 +161,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 		
 		selectedIndexes = [NSIndexPath]()
 		setToolbarButtonTitle()
-		displayToolbarEnabledState()
+		toolbarEnabledState()
 	}
 	
 	func createNewPhotoCollection() {
@@ -185,7 +190,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 	}
 	
 	func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
-		let cell = collectionView.dequeueReusableCellWithReuseIdentifier("PhotoCell", forIndexPath: indexPath) as! PhotoCell
+		let cell = collectionView.dequeueReusableCellWithReuseIdentifier(Constants.cellIdentifier, forIndexPath: indexPath) as! PhotoCell
 		configureCell(cell, atIndexPath: indexPath)
 		return cell
 	}
@@ -200,17 +205,23 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 			cell.flickrImage.image = image
 		}
 		else { //download the image from the remote server
-			cell.flickrImage.image = UIImage(named: "noPhoto.png")
+			cell.flickrImage.image = UIImage(named: Constants.noPhoto)
 			cell.activityIndicator.startAnimating()
 			
-			photo.fetchImageData(photo.imageURL, completionHandler: { (fetchComplete, error) -> Void in
-				if fetchComplete ==  true {
-					self.performUIUpdatesOnMain({ () -> Void in
-						self.collectionView.reloadItemsAtIndexPaths([indexPath])
-					})
-				}
-			})
+			if photo.fetchInProgress == false {
+				noPhotosDownloading++
+				photo.fetchImageData(photo.imageURL, completionHandler: { (fetchComplete, error) -> Void in
+					self.noPhotosDownloading--
+					if fetchComplete == true {
+						self.performUIUpdatesOnMain({ () -> Void in
+							self.collectionView.reloadItemsAtIndexPaths([indexPath])
+						})
+					}
+				})
+			}
 		}
+		
+		toolbarEnabledState()
 		
 		if let _ = selectedIndexes.indexOf(indexPath) {
 			cell.selectedColor.alpha = 0.8
@@ -222,13 +233,13 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 	//MARK: collection view delegate methods
 	
 	func collectionView(collectionView: UICollectionView, didSelectItemAtIndexPath indexPath: NSIndexPath) {
-        let cell = collectionView.cellForItemAtIndexPath(indexPath) as! PhotoCell
-	
+		let cell = collectionView.cellForItemAtIndexPath(indexPath) as! PhotoCell
+		
 		selectedIndexes.append(indexPath)
 		
 		configureCell(cell, atIndexPath: indexPath)
 		setToolbarButtonTitle()
-		displayToolbarEnabledState()
+		toolbarEnabledState()
 	}
 	
 	func collectionView(collectionView: UICollectionView, didDeselectItemAtIndexPath indexPath: NSIndexPath) {
@@ -239,9 +250,8 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 		}
 		configureCell(cell, atIndexPath: indexPath)
 		setToolbarButtonTitle()
-		displayToolbarEnabledState()
+		toolbarEnabledState()
 	}
-	
 	
 	// MARK: - NSFetchedResultsController delegates
 	
@@ -249,7 +259,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 		insertedIndexPaths = [NSIndexPath]()
 		deletedIndexPaths = [NSIndexPath]()
 		updatedIndexPaths = [NSIndexPath]()
-	
+		
 		self.activityIndicator.stopAnimating()
 	}
 	
@@ -290,15 +300,19 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 	
 	private func setToolbarButtonTitle() {
 		if selectedIndexes.count > 0 {
-			toolBarButton.title = TitleOfToolBarButton.delete
+			toolBarButton.title = Constants.delete
 		} else {
-			toolBarButton.title = TitleOfToolBarButton.newCollection
+			toolBarButton.title = Constants.newCollection
 		}
 	}
 	
-	private func displayToolbarEnabledState() {
-		if toolBarButton.title == TitleOfToolBarButton.newCollection {
-			toolBarButton.enabled = false
+	private func toolbarEnabledState() {
+		if toolBarButton.title == Constants.newCollection {
+			if pin.fetchInProgress == true || noPhotosDownloading > 0 {
+				toolBarButton.enabled = false
+			} else {
+				toolBarButton.enabled = true
+			}
 		} else {
 			toolBarButton.enabled = true
 		}

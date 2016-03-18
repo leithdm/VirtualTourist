@@ -41,6 +41,4 @@ class Pin: NSManagedObject, MKAnnotation {
 			longitude = newValue.longitude
 		}
 	}
-
-	
 }
