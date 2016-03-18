@@ -125,7 +125,7 @@ class TravelLocationsViewController: UIViewController {
 		
 		FlickrClient.sharedInstance.downloadPhotoProperties(pin, completionHandler: { (data, error) -> Void in
 			guard error == nil else {
-				print("error downloading photo properties")
+				print("error downloading photo properties - network connectivity")
 				return
 			}
 			

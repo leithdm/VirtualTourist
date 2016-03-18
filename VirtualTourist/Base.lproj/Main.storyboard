@@ -77,6 +77,14 @@
                             <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="5Ml-s5-4vm">
                                 <rect key="frame" x="0.0" y="64" width="600" height="165"/>
                             </mapView>
+                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="58D-4k-LKL">
+                                <rect key="frame" x="275" y="122" width="50" height="50"/>
+                                <color key="backgroundColor" red="0.29803922770000002" green="0.29803922770000002" blue="0.29803922770000002" alpha="1" colorSpace="calibratedRGB"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="50" id="NLd-DL-1jM"/>
+                                </constraints>
+                                <color key="color" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                            </activityIndicatorView>
                             <toolbar opaque="NO" clearsContextBeforeDrawing="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="owm-jx-i0N">
                                 <rect key="frame" x="0.0" y="556" width="600" height="44"/>
                                 <items>
@@ -149,25 +157,25 @@
                                     <outlet property="delegate" destination="gg3-0I-9Pg" id="l2f-JK-UVI"/>
                                 </connections>
                             </collectionView>
-                            <activityIndicatorView hidden="YES" opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" style="whiteLarge" translatesAutoresizingMaskIntoConstraints="NO" id="58D-4k-LKL">
-                                <rect key="frame" x="275" y="122" width="50" height="50"/>
-                                <color key="backgroundColor" red="0.29803922770000002" green="0.29803922770000002" blue="0.29803922770000002" alpha="1" colorSpace="calibratedRGB"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="50" id="NLd-DL-1jM"/>
-                                </constraints>
-                                <color key="color" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
-                            </activityIndicatorView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="No Images Found" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eIk-fh-4oa">
+                                <rect key="frame" x="221.5" y="287.5" width="157.5" height="25.5"/>
+                                <fontDescription key="fontDescription" name="GillSans" family="Gill Sans" pointSize="22"/>
+                                <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="qpj-9B-Gao" firstAttribute="leading" secondItem="aOP-R2-IfC" secondAttribute="leading" id="GUh-5n-4Tm"/>
                             <constraint firstItem="qpj-9B-Gao" firstAttribute="leading" secondItem="5Ml-s5-4vm" secondAttribute="leading" id="LI1-NV-R1s"/>
+                            <constraint firstItem="eIk-fh-4oa" firstAttribute="centerY" secondItem="aOP-R2-IfC" secondAttribute="centerY" id="NuA-PJ-qlz"/>
                             <constraint firstItem="58D-4k-LKL" firstAttribute="top" secondItem="hCp-zj-iUt" secondAttribute="bottom" constant="58" id="OUm-8W-B4k"/>
                             <constraint firstItem="qpj-9B-Gao" firstAttribute="top" secondItem="58D-4k-LKL" secondAttribute="bottom" constant="54" id="PaS-It-67a"/>
                             <constraint firstItem="qpj-9B-Gao" firstAttribute="trailing" secondItem="5Ml-s5-4vm" secondAttribute="trailing" id="S3y-7E-WC4"/>
                             <constraint firstItem="58D-4k-LKL" firstAttribute="centerY" secondItem="5Ml-s5-4vm" secondAttribute="centerY" id="Spp-P9-UzD"/>
                             <constraint firstAttribute="trailing" secondItem="owm-jx-i0N" secondAttribute="trailing" id="XUO-mF-LqB"/>
                             <constraint firstItem="owm-jx-i0N" firstAttribute="bottom" secondItem="uV0-Dj-7cE" secondAttribute="top" id="Yg4-RA-IcU"/>
+                            <constraint firstItem="eIk-fh-4oa" firstAttribute="centerX" secondItem="aOP-R2-IfC" secondAttribute="centerX" id="cLH-54-tVv"/>
                             <constraint firstItem="qpj-9B-Gao" firstAttribute="leading" secondItem="owm-jx-i0N" secondAttribute="leading" id="iTJ-1R-IIT"/>
                             <constraint firstItem="58D-4k-LKL" firstAttribute="centerX" secondItem="5Ml-s5-4vm" secondAttribute="centerX" id="jD1-CY-ahE"/>
                             <constraint firstItem="5Ml-s5-4vm" firstAttribute="top" secondItem="hCp-zj-iUt" secondAttribute="bottom" id="nru-cO-B04"/>
@@ -180,6 +188,7 @@
                         <outlet property="activityIndicator" destination="58D-4k-LKL" id="z5k-vm-5iH"/>
                         <outlet property="collectionView" destination="qpj-9B-Gao" id="TmF-v0-Aaf"/>
                         <outlet property="mapView" destination="5Ml-s5-4vm" id="e1P-bH-vgj"/>
+                        <outlet property="noImagesFound" destination="eIk-fh-4oa" id="LiP-JG-Q0F"/>
                         <outlet property="toolBar" destination="owm-jx-i0N" id="Upe-Hh-Gew"/>
                         <outlet property="toolBarButton" destination="TwH-bZ-N2Y" id="f5W-Qd-aAM"/>
                     </connections>

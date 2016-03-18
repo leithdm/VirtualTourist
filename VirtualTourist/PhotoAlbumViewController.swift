@@ -55,6 +55,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 	@IBOutlet weak var toolBarButton: UIBarButtonItem!
 	@IBOutlet weak var toolBar: UIToolbar!
 	@IBOutlet weak var activityIndicator: UIActivityIndicatorView!
+	@IBOutlet weak var noImagesFound: UILabel!
 	
 	//MARK: lifecycle methods
 	
@@ -66,6 +67,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 		fetchedResultsController.delegate = self
 		activityIndicator.hidesWhenStopped = true
 		activityIndicator.stopAnimating()
+		noImagesFound.hidden = true
 		
 		//start the fetch
 		do {
@@ -121,6 +123,8 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 			guard error == nil else {
 				print("error in downloading photo properties")
 				self.activityIndicator.stopAnimating()
+				self.toolBarButton.enabled = true
+				self.noImagesFound.hidden = false
 				return
 			}
 			
