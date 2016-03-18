@@ -12,18 +12,22 @@ import CoreData
 
 class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
 	
+	//MARK: properties
 	var pin: Pin!
-    private var selectedIndexes = [NSIndexPath]()
+	private var selectedIndexes = [NSIndexPath]()
 	
+	//MARK: outlets
 	@IBOutlet weak var mapView: MKMapView!
 	@IBOutlet weak var collectionView: UICollectionView!
 	@IBOutlet weak var toolBarButton: UIBarButtonItem!
 	@IBOutlet weak var toolBar: UIToolbar!
 	
+	
+	//MARK: lifecycle methods
 	override func viewDidLoad() {
 		super.viewDidLoad()
 		
-		//MARK: initialize map view
+		//initialize map view
 		mapView.delegate = self
 		mapView.userInteractionEnabled = false
 		
@@ -35,7 +39,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 		
 		initializeCollectionView()
 	}
-
+	
 	
 	override func viewWillAppear(animated: Bool) {
 		super.viewWillAppear(animated)
@@ -45,15 +49,15 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 		}
 	}
 	
-	//MARK: download photo properties (photo id and url_m string) from the server. 
+	//MARK: download photo properties (photo id and url_m string) from the server.
 	
 	private func downloadPhotoProperties() {
 		
-//		if pin.fetchInProgress == true {
-//			return
-//		} else {
-//			pin.fetchInProgress = true
-//		}
+		//		if pin.fetchInProgress == true {
+		//			return
+		//		} else {
+		//			pin.fetchInProgress = true
+		//		}
 		
 		FlickrClient.sharedInstance.downloadPhotoProperties(pin) { (data, error) -> Void in
 			if let data = data {
@@ -68,7 +72,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 					CoreDataStackManager.sharedInstance.saveContext()
 				})
 			}
-//			self.pin.fetchInProgress = false
+			//			self.pin.fetchInProgress = false
 		}
 	}
 	
@@ -90,22 +94,22 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 	}
 	
 	@IBAction func toolBarDelete(sender: UIBarButtonItem) {
-			if selectedIndexes.count > 0 {
-				deleteSelectedPhotos()
-			} else {
-				createNewPhotoCollection()
-			}
+		if selectedIndexes.count > 0 {
+			deleteSelectedPhotos()
+		} else {
+			createNewPhotoCollection()
+		}
 	}
 	
 	func collectionView(collectionView: UICollectionView, cellForItemAtIndexPath indexPath: NSIndexPath) -> UICollectionViewCell {
 		let photo = pin.photos[indexPath.item]
 		var photoImage = UIImage(named: "noPhoto.png")
-
+		
 		let cell = collectionView.dequeueReusableCellWithReuseIdentifier("UICustomCollectionViewCell", forIndexPath: indexPath) as! UICustomCollectionViewCell
 		
 		cell.setUpActivityIndicator(cell)
 		cell.activityIndicator.startAnimating()
-
+		
 		cell.flickrImage.image = nil
 		
 		if photo.image != nil { //the image has already been downloaded and is in the Documents directory
@@ -142,8 +146,8 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 		sharedContext.deleteObject(photo)
 		removeFromDocumentsDirectory(photo.imageId)
 		CoreDataStackManager.sharedInstance.saveContext()
-//		setToolbarButtonTitle()
-//		displayToolbarEnabledState()
+		//		setToolbarButtonTitle()
+		//		displayToolbarEnabledState()
 	}
 	
 	func removeFromDocumentsDirectory(identifier: String) {
@@ -152,7 +156,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 		let path = fullURL.path!
 		
 		do {
-		try NSFileManager.defaultManager().removeItemAtPath(path)
+			try NSFileManager.defaultManager().removeItemAtPath(path)
 		} catch {
 			//
 		}
@@ -161,7 +165,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 	//MARK: create/delete photos collection
 	
 	private func createNewPhotoCollection() {
-
+		
 		//Empty the current array of photos.
 		for photo in pin.photos {
 			photo.pin = nil
@@ -181,8 +185,8 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 			pin.photos.removeAtIndex(indexPath.item)
 		}
 		collectionView.reloadData()
-//		setToolbarButtonTitle()
-//		displayToolbarEnabledState()
+		//		setToolbarButtonTitle()
+		//		displayToolbarEnabledState()
 	}
 	
 	//MARK: helper methods
