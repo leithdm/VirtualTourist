@@ -60,10 +60,8 @@ class TravelLocationsViewController: UIViewController {
 		navigationItem.backBarButtonItem = UIBarButtonItem(title: Constants.backButtonOK, style: .Plain, target: nil, action: nil)
 		restoreMapState(true)
 		
-		//core data
 		pins = fetchAllPins()
 		mapView.addAnnotations(pins)
-		
 		addLongPressPinDropRecognizer()
 	}
 	
@@ -109,20 +107,18 @@ class TravelLocationsViewController: UIViewController {
 		CoreDataStackManager.sharedInstance.saveContext()
 		
 		mapView.addAnnotation(pin)
-	
 		displayEditButton()
-		
-//		fetchFlickrPhotoProperties(pin)
+		preFetchFlickrPhotoProperties(pin)
 		
 	}
 	
 	// Pre-fetch photo data from Flickr as soon as a pin is dropped
-	func fetchFlickrPhotoProperties(pin: Pin) {
-//		if pin.fetchInProgress == true {
-//			return
-//		} else {
-//			pin.fetchInProgress = true
-//		}
+	func preFetchFlickrPhotoProperties(pin: Pin) {
+		if pin.fetchInProgress == true {
+			return
+		} else {
+			pin.fetchInProgress = true
+		}
 		
 		FlickrClient.sharedInstance.downloadPhotoProperties(pin, completionHandler: { (data, error) -> Void in
 			guard error == nil else {
@@ -234,7 +230,7 @@ class TravelLocationsViewController: UIViewController {
 		}
 		
 		CoreDataStackManager.sharedInstance.saveContext()
-		fetchFlickrPhotoProperties(pin)
+		preFetchFlickrPhotoProperties(pin)
 	}
 }
 
@@ -258,7 +254,6 @@ extension TravelLocationsViewController: MKMapViewDelegate {
 	}
 	
 	func mapView(mapView: MKMapView, didSelectAnnotationView view: MKAnnotationView) {
-		
 		mapView.deselectAnnotation(view.annotation, animated: false)
 		view.setSelected(true, animated: true)
 		
@@ -279,14 +274,11 @@ extension TravelLocationsViewController: MKMapViewDelegate {
 	}
 	
 	func mapView(mapView: MKMapView, annotationView view: MKAnnotationView, didChangeDragState newState: MKAnnotationViewDragState, fromOldState oldState: MKAnnotationViewDragState) {
-		
-		// track the immediate result of an .Ending pin drag state
 		if newState == MKAnnotationViewDragState.Ending {
 			dragPinEnded = true
 		}
 	}
 	
-	//any time map is moved save the map state
 	func mapView(mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
 		saveMapState()
 	}

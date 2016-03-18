@@ -104,6 +104,12 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 	
 	func downloadPhotoProperties() {
 		activityIndicator.startAnimating()
+		
+		if pin.fetchInProgress == true {
+			return
+		} else {
+			pin.fetchInProgress = true
+		}
 
 		FlickrClient.sharedInstance.downloadPhotoProperties(pin) { (data, error) -> Void in
 			
@@ -124,7 +130,7 @@ class PhotoAlbumViewController: UIViewController, UICollectionViewDataSource, UI
 					CoreDataStackManager.sharedInstance.saveContext()
 				})
 			}
-			//self.pin.fetchInProgress = false
+			self.pin.fetchInProgress = false
 		}
 	}
 	
