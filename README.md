@@ -1,6 +1,6 @@
-###Virtual Tourist
+# Virtual Tourist
 
-##Summary of features:
+## Summary of features:
 
 - Drop a pin on the map to specify a travel location anywhere in the world.
 - Create a virtual photo album for each location by downloading and parsing images via the RESTful Flickr API.
